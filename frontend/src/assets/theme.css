@@ -1,0 +1,19 @@
+:root[data-theme='light'] {
+  --bg-body:#ffffff;
+  --bg-card:#ffffff;
+  --text-primary:#212529;
+  --text-secondary:#6c757d;
+  --border-color:#e5e7eb;
+}
+:root[data-theme='dark'] {
+  --bg-body:#121212;
+  --bg-card:#1e1e1e;
+  --text-primary:#f5f5f5;
+  --text-secondary:#a1a1aa;
+  --border-color:#2a2a2a;
+}
+body {background:var(--bg-body); color:var(--text-primary);}
+.card {background:var(--bg-card); border-color:var(--border-color)!important;}
+.text-muted {color:var(--text-secondary)!important;}
+.hero-gradient {background:linear-gradient(135deg,#eef4ff,#ffffff);} 
+:root[data-theme='dark'] .hero-gradient {background:linear-gradient(135deg,#1e293b,#0f172a);} 
