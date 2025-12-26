@@ -43,19 +43,19 @@ function Index() {
                         <div className="col-lg-6">
                             <h1 className="display-5 fw-bold mb-3">Learn. Build. Grow.</h1>
                             <p className='lead text-muted mb-4'>High‑quality courses & real student feedback. Find the right next step in seconds.</p>
-                            <form onSubmit={e=>{e.preventDefault(); if(search.trim()) navigate(`/search/?q=${encodeURIComponent(search.trim())}`)}} className='d-flex shadow-sm rounded overflow-hidden bg-white mb-3' style={{maxWidth:520}}>
-                                <input value={search} onChange={e=>setSearch(e.target.value)} placeholder='Search courses...' className='form-control border-0' />
+                            <form onSubmit={e => { e.preventDefault(); if (search.trim()) navigate(`/search/?q=${encodeURIComponent(search.trim())}`) }} className='d-flex shadow-sm rounded overflow-hidden bg-white mb-3' style={{ maxWidth: 520 }}>
+                                <input value={search} onChange={e => setSearch(e.target.value)} placeholder='Search courses...' className='form-control border-0' />
                                 <button className='btn btn-primary rounded-0'><i className='fas fa-search'></i></button>
                             </form>
                             <div className='d-flex flex-wrap gap-2 small'>
                                 <span className='text-muted'>Popular:</span>
-                                {['python','react','ui/ux','data science'].map(tag=> (
-                                    <button key={tag} type='button' onClick={()=>{setSearch(tag); navigate(`/search/?q=${encodeURIComponent(tag)}`)}} className='btn btn-sm btn-outline-secondary rounded-pill'>{tag}</button>
+                                {['python', 'react', 'ui/ux', 'data science'].map(tag => (
+                                    <button key={tag} type='button' onClick={() => { setSearch(tag); navigate(`/search/?q=${encodeURIComponent(tag)}`) }} className='btn btn-sm btn-outline-secondary rounded-pill'>{tag}</button>
                                 ))}
                             </div>
                         </div>
                         <div className="col-lg-6 mt-4 mt-lg-0 text-center">
-                            <img alt='learning illustration' className='img-fluid hero-graphic' src='https://geeksui.codescandy.com/geeks/assets/images/background/acedamy-img/girl-image.png' />
+                            <img alt='learning illustration' className='img-fluid hero-graphic' src='/hero-minimal.png' />
                         </div>
                     </div>
                 </div>
@@ -136,10 +136,10 @@ function Index() {
                     <div className="row">
                         <div className="col-md-12">
                             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                                {loading && Array.from({length:4}).map((_,i)=>(
+                                {loading && Array.from({ length: 4 }).map((_, i) => (
                                     <div className='col' key={i}>
                                         <div className='card h-100 placeholder-wave border-0 shadow-sm'>
-                                            <div className='bg-light placeholder w-100' style={{height:180}} />
+                                            <div className='bg-light placeholder w-100' style={{ height: 180 }} />
                                             <div className='card-body'>
                                                 <div className='placeholder col-4 mb-2'></div>
                                                 <div className='placeholder col-10 mb-1'></div>
@@ -174,9 +174,9 @@ function Index() {
                                 {/* img */}
                                 <div className="position-relative">
                                     <img
-                                        src="https://geeksui.codescandy.com/geeks/assets/images/png/cta-instructor-1.png"
+                                        src="/cta-instructor.png"
                                         alt="image"
-                                        className="img-fluid mt-n8"
+                                        className="img-fluid mt-n8 rounded-3 shadow-lg"
                                     />
                                     <div className="ms-n8 position-absolute bottom-0 start-0 mb-6">
                                         <img src="https://geeksui.codescandy.com/geeks/assets/images/svg/dollor.svg" alt="dollor" />
@@ -257,7 +257,7 @@ function Index() {
                                 {/* controls */}
                                 {/* slider */}
                                 <div className="row g-4">
-                                    {loading && Array.from({length:3}).map((_,i)=>(
+                                    {loading && Array.from({ length: 3 }).map((_, i) => (
                                         <div className='col-md-6 col-lg-4' key={i}>
                                             <div className='card h-100 border-0 shadow-sm'>
                                                 <div className='card-body'>
@@ -285,12 +285,12 @@ function Index() {
 }
 
 // Reusable components
-const CourseCard = ({course}) => {
+const CourseCard = ({ course }) => {
     return (
         <div className='col'>
             <div className='card h-100 border-0 shadow-sm card-hover'>
                 <Link to={`/course-detail/${course.slug}`}>
-                    <img src={course.image || 'https://via.placeholder.com/600x400'} alt={course.title} className='card-img-top' style={{height:180, objectFit:'cover'}} />
+                    <img src={course.image || '/course-placeholder.png'} alt={course.title} className='card-img-top' style={{ height: 180, objectFit: 'cover' }} />
                 </Link>
                 <div className='card-body d-flex flex-column'>
                     <div className='d-flex justify-content-between align-items-center mb-2 small'>
@@ -308,12 +308,12 @@ const CourseCard = ({course}) => {
     );
 };
 
-const ReviewCard = ({review}) => {
+const ReviewCard = ({ review }) => {
     return (
         <div className='col-md-6 col-lg-4'>
             <div className='card h-100 border-0 shadow-sm'>
                 <div className='card-body d-flex flex-column'>
-                    <p className='flex-grow-1 mb-3'>{review.review?.slice(0,140)}{review.review?.length>140 && '...'}</p>
+                    <p className='flex-grow-1 mb-3'>{review.review?.slice(0, 140)}{review.review?.length > 140 && '...'}</p>
                     <div className='d-flex justify-content-between align-items-center small'>
                         <span className='text-warning'><i className='fas fa-star me-1'></i>{review.rating}</span>
                         <time className='text-muted'>{new Date(review.date).toLocaleDateString()}</time>

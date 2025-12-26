@@ -14,4 +14,5 @@ urlpatterns = [
     path("instructor/revenue-trend/", api_views.InstructorRevenueTrendAPIView.as_view()),
     path("home/featured-courses/", api_views.featured_courses),
     path("home/recent-reviews/", api_views.recent_reviews),
+    path("course-detail/<slug>/", api_views.course_detail),
 ]

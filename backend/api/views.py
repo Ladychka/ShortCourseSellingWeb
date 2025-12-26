@@ -209,4 +209,17 @@ def recent_reviews(request):
             'course': r['course'],
             'date': r['date'],
         })
-    return Response(data, status=200)
+    return Response(data, status=200) 
+ @ a p i _ v i e w ( [ ' G E T ' ] )  
+ @ p e r m i s s i o n _ c l a s s e s ( [ A l l o w A n y ] )  
+ d e f   c o u r s e _ d e t a i l ( r e q u e s t ,   s l u g ) :  
+         f r o m   a p i . m o d e l s   i m p o r t   C o u r s e  
+         f r o m   a p i . s e r i a l i z e r   i m p o r t   C o u r s e S e r i a l i z e r  
+         t r y :  
+                 c o u r s e   =   C o u r s e . o b j e c t s . g e t ( s l u g = s l u g ,   p l a t f o r m _ s t a t u s = ' a c t i v e ' ,   t e a c h e r _ s t a t u s = ' a v a i l a b l e ' )  
+         e x c e p t   C o u r s e . D o e s N o t E x i s t :  
+                 r e t u r n   R e s p o n s e ( { " m e s s a g e " :   " C o u r s e   n o t   f o u n d " } ,   s t a t u s = s t a t u s . H T T P _ 4 0 4 _ N O T _ F O U N D )  
+                  
+         s e r i a l i z e r   =   C o u r s e S e r i a l i z e r ( c o u r s e ,   c o n t e x t = { ' r e q u e s t ' :   r e q u e s t } )  
+         r e t u r n   R e s p o n s e ( s e r i a l i z e r . d a t a ,   s t a t u s = 2 0 0 )  
+ 

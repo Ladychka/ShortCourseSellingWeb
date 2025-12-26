@@ -1,10 +1,70 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-
-import BaseHeader from '../partials/BaseHeader'
-import BaseFooter from '../partials/BaseFooter'
+import React, { useEffect, useState } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import BaseHeader from '../partials/BaseHeader';
+import BaseFooter from '../partials/BaseFooter';
+import useAxios from '../../utils/useAxios';
+import { API } from '../../utils/apiRoutes';
+import useCartStore from '../../store/cart';
+import Swal from 'sweetalert2';
 
 function CourseDetail() {
+    const { slug } = useParams();
+    const navigate = useNavigate();
+    const api = useAxios();
+    const [course, setCourse] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const { addToCart } = useCartStore();
+
+    useEffect(() => {
+        const fetchCourse = async () => {
+            try {
+                const res = await api.get(API.COURSE_DETAIL + slug + '/');
+                setCourse(res.data);
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCourse();
+    }, [slug]);
+
+    const handleAddToCart = () => {
+        if (course) {
+            addToCart(course);
+            Swal.fire({
+                icon: 'success',
+                title: 'Added to Cart',
+                text: 'Course has been added to your cart!',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        }
+    };
+
+    const handleEnroll = () => {
+        if (course) {
+            addToCart(course);
+            navigate('/cart/');
+        }
+    };
+
+    if (loading) {
+        return (
+             <>
+                <BaseHeader />
+                <div className="container py-5 text-center">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <BaseFooter />
+            </>
+        );
+    }
+
     return (
         <>
             <BaseHeader />
@@ -16,34 +76,34 @@ function CourseDetail() {
                             <div className="col-lg-8">
                                 {/* Badge */}
                                 <h6 className="mb-3 font-base bg-primary text-white py-2 px-4 rounded-2 d-inline-block">
-                                    Web Development
+                                    {course?.category?.title || 'Course'}
                                 </h6>
                                 {/* Title */}
-                                <h1 className='mb-3'>The Comprehensive React.Js and Django Course - A Bundle of 12 Courses in 1</h1>
+                                <h1 className='mb-3'>{course?.title}</h1>
                                 <p className='mb-3'>
-                                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloribus facere hic quisquam suscipit aliquid distinctio repellat eum in molestias necessitatibus illum omnis autem laudantium adipisci, sit blanditiis accusantium dignissimos veniam!
+                                    {course?.description?.substring(0, 150)}...
                                 </p>
                                 {/* Content */}
                                 <ul className="list-inline mb-0">
                                     <li className="list-inline-item h6 me-3 mb-1 mb-sm-0">
                                         <i className="fas fa-star text-warning me-2" />
-                                        4.5/5.0
+                                        {course?.average_rating || 0}/5.0
                                     </li>
                                     <li className="list-inline-item h6 me-3 mb-1 mb-sm-0">
                                         <i className="fas fa-user-graduate text-orange me-2" />
-                                        12k Enrolled
+                                        {course?.students?.length || 0} Enrolled
                                     </li>
                                     <li className="list-inline-item h6 me-3 mb-1 mb-sm-0">
                                         <i className="fas fa-signal text-success me-2" />
-                                        All levels
+                                        {course?.level}
                                     </li>
                                     <li className="list-inline-item h6 me-3 mb-1 mb-sm-0">
                                         <i className="bi bi-patch-exclamation-fill text-danger me-2" />
-                                        Date Published 09/2021
+                                        {course?.date}
                                     </li>
                                     <li className="list-inline-item h6 mb-0">
                                         <i className="fas fa-globe text-info me-2" />
-                                        English
+                                        {course?.language}
                                     </li>
                                 </ul>
                             </div>
@@ -1062,7 +1122,7 @@ function CourseDetail() {
                                         {/* Video START */}
                                         <div className="card shadow p-2 mb-4 z-index-9">
                                             <div className="overflow-hidden rounded-3">
-                                                <img src="https://geeksui.codescandy.com/geeks/assets/images/course/course-angular.jpg" className="card-img" alt="course image" />
+                                                <img src={course?.image} className="card-img" alt="course image" style={{ objectFit: 'cover', height: '200px' }} />
                                                 <div className="m-auto rounded-2 mt-2 d-flex justify-content-center align-items-center" style={{ backgroundColor: "#ededed" }}>
                                                     <a data-bs-toggle="modal" data-bs-target="#exampleModal" href="https://www.youtube.com/embed/tXHviS-4ygo" className="btn btn-lg text-danger btn-round btn-white-shadow mb-0" data-glightbox="" data-gallery="course-video">
                                                         <i className="fas fa-play" />
@@ -1100,7 +1160,7 @@ function CourseDetail() {
                                                     {/* Price and time */}
                                                     <div>
                                                         <div className="d-flex align-items-center">
-                                                            <h3 className="fw-bold mb-0 me-2">$350</h3>
+                                                            <h3 className="fw-bold mb-0 me-2">${course?.price}</h3>
                                                         </div>
                                                     </div>
                                                     {/* Share button with dropdown */}
@@ -1150,12 +1210,12 @@ function CourseDetail() {
                                                 </div>
                                                 {/* Buttons */}
                                                 <div className="mt-3 d-sm-flex justify-content-sm-between ">
-                                                    <Link to="/cart/" className="btn btn-primary mb-0 w-100 me-2">
+                                                    <button onClick={handleAddToCart} className="btn btn-primary mb-0 w-100 me-2">
                                                         <i className='fas fa-shopping-cart'></i> Add To Cart
-                                                    </Link>
-                                                    <Link to="/cart/" className="btn btn-success mb-0 w-100">
+                                                    </button>
+                                                    <button onClick={handleEnroll} className="btn btn-success mb-0 w-100">
                                                         Enroll Now <i className='fas fa-arrow-right'></i>
-                                                    </Link>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

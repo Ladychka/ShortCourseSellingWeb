@@ -3,7 +3,8 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/auth";
 
 const PrivateRoute = ({ children }) => {
-    const loggedIn = useAuthStore((state) => state.isLoggedIn)();
+    // call the isLoggedIn function inside the selector so zustand can subscribe properly
+    const loggedIn = useAuthStore((state) => state.isLoggedIn());
     const loading = useAuthStore((state) => state.loading);
     const location = useLocation();
 

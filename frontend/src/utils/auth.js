@@ -23,13 +23,13 @@ export const login = async (email, password) => {
 export const register = async (fullName, email, password, password2) => {
     try {
         // Backend expects: username, email, password, password2
-            const payload = {
-                username: fullName?.replace(/\s+/g, '_').toLowerCase(),
-                full_name: fullName,
-                email,
-                password,
-                password2,
-            };
+        const payload = {
+            username: fullName?.replace(/\s+/g, '_').toLowerCase(),
+            full_name: fullName,
+            email,
+            password,
+            password2,
+        };
         const { data, status } = await axios.post('user/register/', payload);
         if (status === 201) {
             await login(email, password);
@@ -54,7 +54,10 @@ export const logout = () => {
 export const setUser = async () => {
     const access_token = Cookie.get("access_token");
     const refresh_token = Cookie.get("refresh_token");
-    if (!access_token || !refresh_token) return;
+    if (!access_token || !refresh_token) {
+        useAuthStore.getState().setLoading(false);
+        return;
+    }
     if (isAccessTokenExpired(access_token)) {
         try {
             const response = await getRefreshedToken();

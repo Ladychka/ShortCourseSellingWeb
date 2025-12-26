@@ -1,19 +1,24 @@
 :root[data-theme='light'] {
   --bg-body:#ffffff;
   --bg-card:#ffffff;
-  --text-primary:#212529;
-  --text-secondary:#6c757d;
-  --border-color:#e5e7eb;
+  --text-primary:#0f0f0f;
+  --text-secondary:#525252;
+  --border-color:#e5e5e5;
+  --primary-color: #000000;
+  --hover-color: #333333;
 }
 :root[data-theme='dark'] {
-  --bg-body:#121212;
-  --bg-card:#1e1e1e;
-  --text-primary:#f5f5f5;
-  --text-secondary:#a1a1aa;
-  --border-color:#2a2a2a;
+  --bg-body:#0a0a0a;
+  --bg-card:#171717;
+  --text-primary:#ededed;
+  --text-secondary:#a3a3a3;
+  --border-color:#262626;
+  --primary-color: #ffffff;
+  --hover-color: #e5e5e5;
 }
 body {background:var(--bg-body); color:var(--text-primary);}
 .card {background:var(--bg-card); border-color:var(--border-color)!important;}
 .text-muted {color:var(--text-secondary)!important;}
-.hero-gradient {background:linear-gradient(135deg,#eef4ff,#ffffff);} 
-:root[data-theme='dark'] .hero-gradient {background:linear-gradient(135deg,#1e293b,#0f172a);} 
+.hero-gradient {background:var(--bg-body);} 
+.hero-graphic {border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);}
+:root[data-theme='dark'] .hero-gradient {background:var(--bg-body);} 

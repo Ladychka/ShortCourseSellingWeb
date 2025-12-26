@@ -141,6 +141,26 @@ button:focus-visible {
     color: #747bff;
   }
   button {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
   }
 }
+
+/* Monochrome Bootstrap Overrides */
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--bg-body);
+}
+.btn-primary:hover {
+  background-color: var(--hover-color);
+  border-color: var(--hover-color);
+  color: var(--bg-body);
+}
+.text-primary {
+  color: var(--text-primary) !important;
+}
+.bg-primary {
+  background-color: var(--primary-color) !important;
+  color: var(--bg-body) !important;
+}
+
