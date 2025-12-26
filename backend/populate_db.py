@@ -78,8 +78,8 @@ def create_data():
             description="This is a comprehensive course covering all aspects...",
             price=random.choice([19.99, 49.99, 99.99]),
             level='Beginner',
-            platform_status='Published',
-            teacher_status='Published',
+            platform_status='active',
+            teacher_status='available',
             featured=True,
             language='English'
         )
