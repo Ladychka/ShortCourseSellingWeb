@@ -17,7 +17,9 @@ function BaseHeader() {
     return (
         <header className="border-bottom sticky-top bg-body" style={{ backdropFilter: 'blur(6px)' }}>
             <nav className="navbar navbar-expand-lg container" aria-label="Main navigation">
-                <Link className="navbar-brand fw-bold" to="/">Desphixs</Link>
+                <Link className="navbar-brand fw-bold" to="/">
+                    <img src="/logo.png" alt="Code Sprout" style={{ height: 40 }} />
+                </Link>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
@@ -51,15 +53,15 @@ function BaseHeader() {
                     </ul>
                     <form className="d-flex me-lg-3 mb-3 mb-lg-0" role="search" onSubmit={onSearch} style={{ maxWidth: 380 }}>
                         <input className="form-control form-control-sm me-2" placeholder="Search courses..." value={query} onChange={e => setQuery(e.target.value)} />
-                        <button className="btn btn-sm btn-outline-primary" type="submit"><i className="fas fa-search"></i></button>
+                        <button className="btn btn-sm btn-outline-dark" type="submit"><i className="fas fa-search"></i></button>
                     </form>
                     <div className="d-flex align-items-center gap-2">
-                        <Link to="/cart/" className="btn btn-sm btn-outline-success position-relative">
+                        <Link to="/cart/" className="btn btn-sm btn-outline-dark position-relative">
                             <i className="fas fa-shopping-cart"></i>
                             {cartItems.length > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{cartItems.length}</span>}
                         </Link>
-                        {!access && <Link to="/login/" className="btn btn-sm btn-primary">Login</Link>}
-                        {!access && <Link to="/register/" className="btn btn-sm btn-outline-primary">Register</Link>}
+                        {!access && <Link to="/login/" className="btn btn-sm btn-dark">Login</Link>}
+                        {!access && <Link to="/register/" className="btn btn-sm btn-outline-dark">Register</Link>}
                         {access && <Link to="/logout/" className="btn btn-sm btn-outline-danger">Logout</Link>}
                     </div>
                 </div>

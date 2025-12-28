@@ -99,7 +99,7 @@ function Index() {
                                 {/* text */}
                                 <div className="lh-1">
                                     <h2 className="mb-1">41,000+</h2>
-                                    <span>Courses in 42 languages</span>
+                                                                <span>Courses in 3 languages</span>
                                 </div>
                             </div>
                         </div>

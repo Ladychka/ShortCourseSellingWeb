@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import BaseHeader from '../partials/BaseHeader'
-import BaseFooter from '../partials/BaseFooter'
-import Sidebar from './Partials/Sidebar'
-import Header from './Partials/Header'
+import BaseHeader from './views/partials/BaseHeader'
+import BaseFooter from './views/partials/BaseFooter'
+import Sidebar from './views/student/Partials/Sidebar'
+import Header from './views/student/Partials/Header'
 
 import ReactPlayer from 'react-player'
 
