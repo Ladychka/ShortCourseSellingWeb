@@ -15,4 +15,5 @@ urlpatterns = [
     path("home/featured-courses/", api_views.featured_courses),
     path("home/recent-reviews/", api_views.recent_reviews),
     path("course-detail/<slug>/", api_views.course_detail),
+    path("course/search/", api_views.search_course),
 ]

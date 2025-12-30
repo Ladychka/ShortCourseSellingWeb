@@ -5,4 +5,5 @@ export const API = {
   HOME_FEATURED: '/home/featured-courses/',
   HOME_REVIEWS: '/home/recent-reviews/',
   COURSE_DETAIL: '/course-detail/',
+  SEARCH_COURSES: '/course/search/',
 };

@@ -223,3 +223,16 @@ def course_detail(request, slug):
         
     serializer = CourseSerializer(course, context={'request': request})
     return Response(serializer.data, status=200)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def search_course(request):
+    from api.models import Course
+    from api.serializer import CourseSerializer
+    
+    query = request.GET.get('q')
+    if query:
+        courses = Course.objects.filter(title__icontains=query, platform_status='active', teacher_status='available')
+        serializer = CourseSerializer(courses, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response([], status=status.HTTP_200_OK)
