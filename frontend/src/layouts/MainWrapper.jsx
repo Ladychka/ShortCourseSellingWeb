@@ -31,12 +31,25 @@ const MainWrapper = ({ children }) => {
     return (
         <>
             {loading ? null : (
-                <>
-                    <button onClick={toggleTheme} style={{ position: 'fixed', right: 16, bottom: 16, zIndex: 1050 }} className="btn btn-sm btn-secondary shadow">
+                <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                    {children}
+                    
+                    <button 
+                        onClick={toggleTheme} 
+                        className="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center"
+                        style={{ 
+                            position: 'fixed', 
+                            right: 30, 
+                            bottom: 30, 
+                            zIndex: 1050,
+                            width: 50,
+                            height: 50,
+                            fontSize: '1.2rem'
+                        }}
+                    >
                         {theme === 'light' ? <i className='fas fa-moon'></i> : <i className='fas fa-sun'></i>}
                     </button>
-                    {children}
-                </>
+                </div>
             )}
         </>
     );

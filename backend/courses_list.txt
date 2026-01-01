@@ -1,0 +1,13 @@
+Found 12 courses:
+ID: 2 | Title: React | Current Image: 
+ID: 3 | Title: R Programming | Current Image: course-image/R_Programming.jpg
+ID: 16 | Title: Java Script | Current Image: 
+ID: 17 | Title: HTML | Current Image: 
+ID: 18 | Title: CSS | Current Image: 
+ID: 19 | Title: Python | Current Image: 
+ID: 20 | Title: Django | Current Image: 
+ID: 21 | Title: UX/UI | Current Image: 
+ID: 22 | Title: Flutter | Current Image: 
+ID: 23 | Title: Dart | Current Image: 
+ID: 24 | Title: Swift | Current Image: 
+ID: 25 | Title: Java | Current Image: 

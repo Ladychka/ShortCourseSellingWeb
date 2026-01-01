@@ -167,7 +167,7 @@ function Index() {
                 {/* container */}
                 <div className="container">
                     {/* row */}
-                    <div className="row align-items-center bg-primary gx-0 rounded-3 mt-5">
+                    <div className="row align-items-center bg-gray-200 gx-0 rounded-3 mt-5">
                         {/* col */}
                         <div className="col-lg-6 col-12 d-none d-lg-block">
                             <div className="d-flex justify-content-center pt-4">
@@ -178,25 +178,19 @@ function Index() {
                                         alt="image"
                                         className="img-fluid mt-n8 rounded-3 shadow-lg"
                                     />
-                                    <div className="ms-n8 position-absolute bottom-0 start-0 mb-6">
-                                        <img src="https://geeksui.codescandy.com/geeks/assets/images/svg/dollor.svg" alt="dollor" />
-                                    </div>
                                     {/* img */}
-                                    <div className="me-n4 position-absolute top-0 end-0">
-                                        <img src="https://geeksui.codescandy.com/geeks/assets/images/svg/graph.svg" alt="graph" />
-                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div className="col-lg-5 col-12">
-                            <div className="text-white p-5 p-lg-0">
+                            <div className="p-5 ps-lg-5">
                                 {/* text */}
-                                <h2 className="h1 text-white">Become an instructor today</h2>
-                                <p className="mb-0">
+                                <h2 className="h1 text-dark">Become an instructor today</h2>
+                                <p className="mb-0 text-dark">
                                     Instructors from around the world teach millions of students on
                                     Geeks. We provide the tools and skills to teach what you love.
                                 </p>
-                                <a href="#" className="btn bg-white text-dark fw-bold mt-4">
+                                <a href="#" className="btn btn-primary fw-bold mt-4">
                                     Start Teaching Today <i className='fas fa-arrow-right'></i>
                                 </a>
                             </div>

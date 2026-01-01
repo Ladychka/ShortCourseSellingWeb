@@ -70,80 +70,93 @@ function CourseDetail() {
             <BaseHeader />
 
             <>
-                <section className="bg-light py-0 py-sm-5">
-                    <div className="container">
-                        <div className="row py-5">
+                <section className="pt-5 pb-5 position-relative" style={{ marginTop: '50px', background: 'linear-gradient(135deg, rgba(var(--primary-hue), 80, 80, 0.05) 0%, rgba(var(--primary-hue), 80, 80, 0.1) 100%)' }}>
+                    <div className="container pt-5">
+                        <div className="row align-items-center">
                             <div className="col-lg-8">
-                                {/* Badge */}
-                                <h6 className="mb-3 font-base bg-primary text-white py-2 px-4 rounded-2 d-inline-block">
+                                <span className="badge bg-primary rounded-pill mb-3 px-3 py-2 fw-bold shadow-sm">
                                     {course?.category?.title || 'Course'}
-                                </h6>
-                                {/* Title */}
-                                <h1 className='mb-3'>{course?.title}</h1>
-                                <p className='mb-3'>
-                                    {course?.description?.substring(0, 150)}...
+                                </span>
+                                <h1 className="mb-3 display-4 fw-bold">{course?.title}</h1>
+                                <p className="mb-4 lead text-secondary col-lg-10">
+                                    {course?.description?.substring(0, 200)}...
                                 </p>
-                                {/* Content */}
-                                <ul className="list-inline mb-0">
-                                    <li className="list-inline-item h6 me-3 mb-1 mb-sm-0">
-                                        <i className="fas fa-star text-warning me-2" />
-                                        {course?.average_rating || 0}/5.0
-                                    </li>
-                                    <li className="list-inline-item h6 me-3 mb-1 mb-sm-0">
-                                        <i className="fas fa-user-graduate text-orange me-2" />
+                                
+                                <div className="d-flex flex-wrap gap-4 mb-4">
+                                    <div className="d-flex align-items-center">
+                                        <div className="d-flex text-warning small align-items-center">
+                                            <span className="fw-bold fs-5 text-dark me-2">{course?.average_rating || 0}</span>
+                                            <i className="fas fa-star me-1"></i>
+                                            <i className="fas fa-star me-1"></i>
+                                            <i className="fas fa-star me-1"></i>
+                                            <i className="fas fa-star me-1"></i>
+                                            <i className="fas fa-star-half me-1"></i>
+                                        </div>
+                                        <span className="text-secondary ms-2 small">({course?.rating_count || 0} reviews)</span>
+                                    </div>
+                                    <div className="d-flex align-items-center text-secondary">
+                                        <i className="fas fa-user-graduate me-2 text-primary"></i>
                                         {course?.students?.length || 0} Enrolled
-                                    </li>
-                                    <li className="list-inline-item h6 me-3 mb-1 mb-sm-0">
-                                        <i className="fas fa-signal text-success me-2" />
+                                    </div>
+                                    <div className="d-flex align-items-center text-secondary">
+                                        <i className="fas fa-signal me-2 text-success"></i>
                                         {course?.level}
-                                    </li>
-                                    <li className="list-inline-item h6 me-3 mb-1 mb-sm-0">
-                                        <i className="bi bi-patch-exclamation-fill text-danger me-2" />
-                                        {course?.date}
-                                    </li>
-                                    <li className="list-inline-item h6 mb-0">
-                                        <i className="fas fa-globe text-info me-2" />
+                                    </div>
+                                    <div className="d-flex align-items-center text-secondary">
+                                        <i className="fas fa-globe me-2 text-info"></i>
                                         {course?.language}
-                                    </li>
-                                </ul>
+                                    </div>
+                                </div>
+
+                                <div className="d-flex align-items-center gap-3">
+                                    <div className="avatar me-3">
+                                        <img className="avatar-img rounded-circle border border-2 border-white shadow" src={course?.teacher?.image} alt="avatar" style={{width: 48, height: 48, objectFit: 'cover'}} 
+                                            onError={(e) => { e.target.onerror = null; e.target.src = "https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-1.jpg" }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <div className="small text-secondary fw-semibold text-uppercase">Created by</div>
+                                        <div className="fw-bold text-dark">{course?.teacher?.full_name || 'Instructor Name'}</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
-                <section className="pb-0 py-lg-5">
+                <section className="pb-5 pt-4">
                     <div className="container">
                         <div className="row">
                             {/* Main content START */}
                             <div className="col-lg-8">
-                                <div className="card shadow rounded-2 p-0">
+                                <div className="card shadow-sm border-0 glass p-0 mb-4">
                                     {/* Tabs START */}
-                                    <div className="card-header border-bottom px-4 py-3">
+                                    <div className="card-header border-bottom px-4 py-3 bg-transparent">
                                         <ul
-                                            className="nav nav-pills nav-tabs-line py-0"
+                                            className="nav nav-pills gap-2"
                                             id="course-pills-tab"
                                             role="tablist"
                                         >
                                             {/* Tab item */}
-                                            <li className="nav-item me-2 me-sm-4" role="presentation">
-                                                <button className="nav-link mb-2 mb-md-0 active" id="course-pills-tab-1" data-bs-toggle="pill" data-bs-target="#course-pills-1" type="button" role="tab" aria-controls="course-pills-1" aria-selected="true">
+                                            <li className="nav-item" role="presentation">
+                                                <button className="nav-link active rounded-pill px-4" id="course-pills-tab-1" data-bs-toggle="pill" data-bs-target="#course-pills-1" type="button" role="tab" aria-controls="course-pills-1" aria-selected="true">
                                                     Overview
                                                 </button>
                                             </li>
                                             {/* Tab item */}
-                                            <li className="nav-item me-2 me-sm-4" role="presentation">
-                                                <button className="nav-link mb-2 mb-md-0" id="course-pills-tab-2" data-bs-toggle="pill" data-bs-target="#course-pills-2" type="button" role="tab" aria-controls="course-pills-2" aria-selected="false">
+                                            <li className="nav-item" role="presentation">
+                                                <button className="nav-link rounded-pill px-4" id="course-pills-tab-2" data-bs-toggle="pill" data-bs-target="#course-pills-2" type="button" role="tab" aria-controls="course-pills-2" aria-selected="false">
                                                     Curriculum
                                                 </button>
                                             </li>
                                             {/* Tab item */}
-                                            <li className="nav-item me-2 me-sm-4" role="presentation">
-                                                <button className="nav-link mb-2 mb-md-0" id="course-pills-tab-3" data-bs-toggle="pill" data-bs-target="#course-pills-3" type="button" role="tab" aria-controls="course-pills-3" aria-selected="false">
+                                            <li className="nav-item" role="presentation">
+                                                <button className="nav-link rounded-pill px-4" id="course-pills-tab-3" data-bs-toggle="pill" data-bs-target="#course-pills-3" type="button" role="tab" aria-controls="course-pills-3" aria-selected="false">
                                                     Instructor
                                                 </button>
                                             </li>
                                             {/* Tab item */}
-                                            <li className="nav-item me-2 me-sm-4" role="presentation">
-                                                <button className="nav-link mb-2 mb-md-0" id="course-pills-tab-4" data-bs-toggle="pill" data-bs-target="#course-pills-4" type="button" role="tab" aria-controls="course-pills-4" aria-selected="false">
+                                            <li className="nav-item" role="presentation">
+                                                <button className="nav-link rounded-pill px-4" id="course-pills-tab-4" data-bs-toggle="pill" data-bs-target="#course-pills-4" type="button" role="tab" aria-controls="course-pills-4" aria-selected="false">
                                                     Reviews
                                                 </button>
                                             </li>
