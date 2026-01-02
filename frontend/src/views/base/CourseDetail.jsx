@@ -1135,7 +1135,7 @@ function CourseDetail() {
                                         {/* Video START */}
                                         <div className="card shadow p-2 mb-4 z-index-9">
                                             <div className="overflow-hidden rounded-3">
-                                                <img src={course?.image} className="card-img" alt="course image" style={{ objectFit: 'cover', height: '200px' }} />
+                                                <img src={course?.image} className="card-img" alt="course image" style={{ objectFit: 'contain', height: '200px', padding: '20px', backgroundColor: '#f8f9fa' }} />
                                                 <div className="m-auto rounded-2 mt-2 d-flex justify-content-center align-items-center" style={{ backgroundColor: "#ededed" }}>
                                                     <a data-bs-toggle="modal" data-bs-target="#exampleModal" href="https://www.youtube.com/embed/tXHviS-4ygo" className="btn btn-lg text-danger btn-round btn-white-shadow mb-0" data-glightbox="" data-gallery="course-video">
                                                         <i className="fas fa-play" />

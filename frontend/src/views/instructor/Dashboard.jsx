@@ -124,7 +124,7 @@ function Dashboard() {
                                                     <td>
                                                         <div className="d-flex align-items-center">
                                                             <div>
-                                                                <img src={course.image || 'https://via.placeholder.com/100x70'} alt={course.title} style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 8 }} />
+                                                                <img src={course.image || 'https://via.placeholder.com/100x70'} alt={course.title} style={{ width: 100, height: 70, objectFit: 'contain', padding: '5px', backgroundColor: '#f8f9fa', borderRadius: 8 }} />
                                                             </div>
                                                             <div className="ms-3">
                                                                 <h6 className="mb-1">{course.title}</h6>

@@ -284,7 +284,7 @@ const CourseCard = ({ course }) => {
         <div className='col'>
             <div className='card h-100 border-0 shadow-sm card-hover'>
                 <Link to={`/course-detail/${course.slug}`}>
-                    <img src={course.image || '/course-placeholder.png'} alt={course.title} className='card-img-top' style={{ height: 180, objectFit: 'cover' }} />
+                    <img src={course.image || '/course-placeholder.png'} alt={course.title} className='card-img-top bg-light' style={{ height: 180, objectFit: 'contain', padding: '20px' }} />
                 </Link>
                 <div className='card-body d-flex flex-column'>
                     <div className='d-flex justify-content-between align-items-center mb-2 small'>

@@ -74,11 +74,12 @@ function Search() {
                           <img
                             src={course.image}
                             alt={course.title}
-                            className="card-img-top"
+                            className="card-img-top bg-light"
                             style={{
                               width: "100%",
                               height: "220px",
-                              objectFit: "cover",
+                              objectFit: "contain",
+                              padding: "20px"
                             }}
                           />
                           <div className="position-absolute top-0 end-0 m-3">
@@ -112,7 +113,7 @@ function Search() {
                           </div>
                           
                           <div className="d-flex align-items-center justify-content-between pt-3 border-top border-light">
-                              <h4 className="mb-0 fw-bold text-primary">${course.price}</h4>
+                              <h5 className="mb-0 fw-bold text-primary">${course.price}</h5>
                               <div className="d-flex gap-2">
                                 <button
                                     className="btn btn-light rounded-circle text-primary d-flex align-items-center justify-content-center p-0"
@@ -123,9 +124,10 @@ function Search() {
                                 </button>
                                 <Link
                                     to={`/course-detail/${course.slug}/`}
-                                    className="btn btn-primary px-3 py-2 rounded-pill btn-sm d-flex align-items-center"
+                                    className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center p-0"
+                                    style={{width: 38, height: 38}}
                                 >
-                                    Enroll <i className="fas fa-arrow-right ms-2"></i>
+                                    <i className="fas fa-arrow-right"></i>
                                 </Link>
                               </div>
                           </div>

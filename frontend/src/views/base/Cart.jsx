@@ -63,7 +63,7 @@ function Cart() {
                                                         <td>
                                                             <div className="d-lg-flex align-items-center">
                                                                 <div className="w-100px w-md-80px mb-2 mb-md-0">
-                                                                    <img src={item.image} style={{ width: "100px", height: "70px", objectFit: "cover" }} className="rounded" alt="" />
+                                                                    <img src={item.image} style={{ width: "100px", height: "70px", objectFit: "contain", padding: "5px", backgroundColor: "#f8f9fa" }} className="rounded" alt="" />
                                                                 </div>
                                                                 <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
                                                                     <Link to={`/course-detail/${item.slug}/`} className='text-decoration-none text-dark' >{item.title}</Link>
