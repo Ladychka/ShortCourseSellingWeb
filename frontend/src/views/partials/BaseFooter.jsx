@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function BaseFooter() {
   return (
@@ -27,11 +28,11 @@ function BaseFooter() {
           <div className="col-lg-2 col-md-3 col-6">
             <h5 className="fw-bold mb-3 text-main">Company</h5>
             <ul className="list-unstyled small">
-              <li className="mb-2"><a href="#" className="text-muted text-decoration-none hover-primary">About</a></li>
+              <li className="mb-2"><Link to="/pages/about-us/" className="text-muted text-decoration-none hover-primary">About</Link></li>
               <li className="mb-2"><a href="#" className="text-muted text-decoration-none hover-primary">Pricing</a></li>
               <li className="mb-2"><a href="#" className="text-muted text-decoration-none hover-primary">Blog</a></li>
               <li className="mb-2"><a href="#" className="text-muted text-decoration-none hover-primary">Careers</a></li>
-              <li className="mb-2"><a href="#" className="text-muted text-decoration-none hover-primary">Contact</a></li>
+              <li className="mb-2"><Link to="/pages/contact-us/" className="text-muted text-decoration-none hover-primary">Contact</Link></li>
             </ul>
           </div>
 
@@ -55,11 +56,11 @@ function BaseFooter() {
                 </li>
                 <li className="mb-3 d-flex align-items-center">
                     <i className="bi bi-envelope me-2 text-primary"></i>
-                    <a href="mailto:codesprout@gmail.com" className="text-muted text-decoration-none">codesprout@gmail.com</a>
+                    <a href="mailto:support@codesprout.com" className="text-muted text-decoration-none">support@codesprout.com</a>
                 </li>
                  <li className="mb-3 d-flex align-items-center">
                     <i className="bi bi-envelope me-2 text-primary"></i>
-                    <span>CEO: <a href="mailto:ladychka16@gmail.com" className="text-muted text-decoration-none">ladychka16@gmail.com</a></span>
+                    <span>CEO: <a href="mailto:ladychkatheceo@codesprout.com" className="text-muted text-decoration-none">ladychkatheceo@codesprout.com</a></span>
                 </li>
                 <li className="mb-3 d-flex align-items-center">
                     <i className="bi bi-telephone me-2 text-primary"></i>

@@ -49,7 +49,7 @@ function Index() {
                             </form>
                             <div className='d-flex flex-wrap gap-2 small'>
                                 <span className='text-muted'>Popular:</span>
-                                {['python', 'react', 'ui/ux', 'data science'].map(tag => (
+                                {['python', 'react', 'backend', 'frontend', 'ui/ux', 'data science'].map(tag => (
                                     <button key={tag} type='button' onClick={() => { setSearch(tag); navigate(`/search/?q=${encodeURIComponent(tag)}`) }} className='btn btn-sm btn-outline-secondary rounded-pill'>{tag}</button>
                                 ))}
                             </div>
@@ -72,7 +72,7 @@ function Index() {
                                     <i className="fe fe-award fs-2 text-info" />
                                 </div>
                                 <div className="lh-1">
-                                    <h2 className="mb-1">316,000+</h2>
+                                    <h2 className="mb-1">16</h2>
                                     <span>Qualified Instructor</span>
                                 </div>
                             </div>
@@ -85,7 +85,7 @@ function Index() {
                                 </div>
                                 {/* text */}
                                 <div className="lh-1">
-                                    <h2 className="mb-1">1.8 Billion+</h2>
+                                    <h2 className="mb-1">16</h2>
                                     <span>Course enrolments</span>
                                 </div>
                             </div>
@@ -98,7 +98,7 @@ function Index() {
                                 </div>
                                 {/* text */}
                                 <div className="lh-1">
-                                    <h2 className="mb-1">41,000+</h2>
+                                    <h2 className="mb-1">16</h2>
                                                                 <span>Courses in 3 languages</span>
                                 </div>
                             </div>
@@ -111,7 +111,7 @@ function Index() {
                                 </div>
                                 {/* text */}
                                 <div className="lh-1">
-                                    <h2 className="mb-1">179,000+</h2>
+                                    <h2 className="mb-1">16</h2>
                                     <span>Online Videos</span>
                                 </div>
                             </div>
