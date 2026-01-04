@@ -4,7 +4,7 @@ import ReactPlayer from "react-player";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
-import * as API from "../../utils/apiRoutes";
+import { API } from "../../utils/apiRoutes";
 import Swal from "sweetalert2";
 
 function StudentCourseLectureDetail() {
