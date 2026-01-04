@@ -9,7 +9,7 @@ function Profile() {
         <>
             <BaseHeader />
 
-            <section className="pt-5 pb-5">
+            <section className="pb-5" style={{ paddingTop: "120px" }}>
                 <div className="container">
                     {/* Header Here */}
                     <Header />

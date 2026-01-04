@@ -12,6 +12,7 @@ function Search() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q");
+  const category = searchParams.get("category");
   const api = useAxios();
   const { addToCart } = useCartStore();
 
@@ -32,7 +33,7 @@ function Search() {
     const fetchCourses = async () => {
       setIsLoading(true);
       try {
-        const res = await api.get(`${API.SEARCH_COURSES}?q=${query || ''}`);
+        const res = await api.get(`${API.SEARCH_COURSES}?q=${query || ''}&category=${category || ''}`);
         setCourses(res.data);
       } catch (error) {
         console.log(error);
@@ -41,7 +42,7 @@ function Search() {
       }
     };
     fetchCourses();
-  }, [query]);
+  }, [query, category]);
 
   return (
     <>
@@ -52,7 +53,7 @@ function Search() {
           <div className="row mb-5">
             <div className="col-12 text-center">
               <h2 className="mb-2 h1 fw-bold text-gradient">
-                {query ? `Results for "${query}"` : "Explore Courses"}
+                {query ? `Results for "${query}"` : category ? `Category: ${category}` : "Explore Courses"}
               </h2>
               <p className="lead text-muted">Discover the best courses to elevate your skills</p>
             </div>

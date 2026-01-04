@@ -1,10 +1,30 @@
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom'
 
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
-
+import useCartStore from '../../store/cart';
 
 function Checkout() {
+    const { cartItems, cartTotal } = useCartStore();
+    const [tax, setTax] = useState(0);
+    const [total, setTotal] = useState(0);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Simple 10% tax calculation for demo
+        const calculatedTax = cartTotal * 0.10;
+        setTax(calculatedTax);
+        setTotal(cartTotal + calculatedTax);
+    }, [cartTotal]);
+
+    // Redirect if cart is empty
+    useEffect(() => {
+        if (cartItems.length === 0) {
+            navigate('/cart/');
+        }
+    }, [cartItems, navigate]);
+
     return (
         <>
             <BaseHeader />
@@ -20,13 +40,13 @@ function Checkout() {
                                     <nav aria-label="breadcrumb">
                                         <ol className="breadcrumb breadcrumb-dots mb-0">
                                             <li className="breadcrumb-item">
-                                                <a href="#" className='text-decoration-none text-dark'>Home</a>
+                                                <Link to="/" className='text-decoration-none text-dark'>Home</Link>
                                             </li>
                                             <li className="breadcrumb-item">
-                                                <a href="#" className='text-decoration-none text-dark'>Courses</a>
+                                                <Link to="/search/" className='text-decoration-none text-dark'>Courses</Link>
                                             </li>
                                             <li className="breadcrumb-item">
-                                                <a href="#" className='text-decoration-none text-dark'>Cart</a>
+                                                <Link to="/cart/" className='text-decoration-none text-dark'>Cart</Link>
                                             </li>
                                             <li className="breadcrumb-item active" aria-current="page">
                                                 Checkout
@@ -55,60 +75,28 @@ function Checkout() {
                             </div>
 
                             <div className="p-4 shadow rounded-3 mt-4">
-                                <h5 className="mb-0 mb-3">Courses</h5>
+                                <h5 className="mb-0 mb-3">Courses ({cartItems.length})</h5>
 
                                 <div className="table-responsive border-0 rounded-3">
                                     <table className="table align-middle p-4 mb-0">
                                         <tbody className="border-top-2">
-                                            <tr>
-                                                <td>
-                                                    <div className="d-lg-flex align-items-center">
-                                                        <div className="w-100px w-md-80px mb-2 mb-md-0">
-                                                            <img src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg" style={{ width: "100px", height: "70px", objectFit: "cover" }} className="rounded" alt="" />
+                                            {cartItems.map((item) => (
+                                                <tr key={item.id}>
+                                                    <td>
+                                                        <div className="d-lg-flex align-items-center">
+                                                            <div className="w-100px w-md-80px mb-2 mb-md-0">
+                                                                <img src={item.image} style={{ width: "100px", height: "70px", objectFit: "contain", padding: "5px", backgroundColor: "#f8f9fa" }} className="rounded" alt="" />
+                                                            </div>
+                                                            <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
+                                                                <Link to={`/course-detail/${item.slug}/`} className='text-decoration-none text-dark' >{item.title}</Link>
+                                                            </h6>
                                                         </div>
-                                                        <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
-                                                            <a href="#" className='text-decoration-none text-dark' >Building Scalable APIs with GraphQL</a>
-                                                        </h6>
-                                                    </div>
-                                                </td>
-                                                <td className="text-center">
-                                                    <h5 className="text-success mb-0">$350</h5>
-                                                </td>
-
-                                            </tr>
-
-                                            <tr>
-                                                <td>
-                                                    <div className="d-lg-flex align-items-center">
-                                                        <div className="w-100px w-md-80px mb-2 mb-md-0">
-                                                            <img src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg" style={{ width: "100px", height: "70px", objectFit: "cover" }} className="rounded" alt="" />
-                                                        </div>
-                                                        <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
-                                                            <a href="#" className='text-decoration-none text-dark' >Building Scalable APIs with GraphQL</a>
-                                                        </h6>
-                                                    </div>
-                                                </td>
-                                                <td className="text-center">
-                                                    <h5 className="text-success mb-0">$350</h5>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>
-                                                    <div className="d-lg-flex align-items-center">
-                                                        <div className="w-100px w-md-80px mb-2 mb-md-0">
-                                                            <img src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg" style={{ width: "100px", height: "70px", objectFit: "cover" }} className="rounded" alt="" />
-                                                        </div>
-                                                        <h6 className="mb-0 ms-lg-3 mt-2 mt-lg-0">
-                                                            <a href="#" className='text-decoration-none text-dark' >Building Scalable APIs with GraphQL</a>
-                                                        </h6>
-                                                    </div>
-                                                </td>
-                                                <td className="text-center">
-                                                    <h5 className="text-success mb-0">$350</h5>
-                                                </td>
-
-                                            </tr>
+                                                    </td>
+                                                    <td className="text-center">
+                                                        <h5 className="text-success mb-0">${item.price}</h5>
+                                                    </td>
+                                                </tr>
+                                            ))}
                                         </tbody>
                                     </table>
                                 </div>
@@ -122,50 +110,27 @@ function Checkout() {
                                         <label htmlFor="yourName" className="form-label">
                                             Your name *
                                         </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="yourName"
-                                            placeholder="Name"
-                                        />
+                                        <input type="text" className="form-control" id="yourName" placeholder="Name" />
                                     </div>
                                     <div className="col-md-6 bg-light-input">
                                         <label htmlFor="emailInput" className="form-label">
                                             Email address *
                                         </label>
-                                        <input
-                                            type="email"
-                                            className="form-control"
-                                            id="emailInput"
-                                            placeholder="Email"
-                                        />
+                                        <input type="email" className="form-control" id="emailInput" placeholder="Email" />
                                     </div>
                                     <div className="col-md-6 bg-light-input">
                                         <label htmlFor="mobileNumber" className="form-label">
                                             Mobile number *
                                         </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="mobileNumber"
-                                            placeholder="Mobile number"
-                                        />
+                                        <input type="text" className="form-control" id="mobileNumber" placeholder="Mobile number" />
                                     </div>
-                                    {/* Country option */}
                                     <div className="col-md-12 bg-light-input">
-                                        <label htmlFor="mobileNumber" className="form-label">
+                                        <label htmlFor="country" className="form-label">
                                             Select country *
                                         </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="mobileNumber"
-                                            placeholder="Country"
-                                        />
+                                        <input type="text" className="form-control" id="country" placeholder="Country" />
                                     </div>
-
                                 </form>
-                                {/* Form END */}
                             </div>
 
                         </div>
@@ -177,106 +142,59 @@ function Checkout() {
                                         <div className="mb-4">
                                             <div className="d-flex justify-content-between align-items-center">
                                                 <span>Transaction ID</span>
-                                                <p className="mb-0 h6 fw-light">DES23853</p>
-                                            </div>
-
-                                        </div>
-
-                                        {/* Course item START */}
-                                        <div className="row g-2 shadow p-2 mb-4 rounded-3">
-                                            <div className="col-sm-4">
-                                                <img src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg" className="rounded" style={{ width: "100px", height: "70px", objectFit: "cover" }} alt="" />
-                                            </div>
-                                            <div className="col-sm-8">
-                                                <h6 className="mb-0">
-                                                    <a href="#" className='text-decoration-none text-dark'>Building Scalable APIs with GraphQL</a>
-                                                </h6>
-                                                <div className="d-flex justify-content-between align-items-center mt-3">
-                                                    <span className="text-success fw-bold">$150</span>
-                                                    <div className="text-primary-hover">
-                                                        <Link to="/cart/" className="text-body me-2">
-                                                            <i className="bi bi-pencil-square me-1" />
-                                                            Edit
-                                                        </Link>
-                                                    </div>
-                                                </div>
+                                                <p className="mb-0 h6 fw-light">DES{Math.floor(Math.random() * 90000) + 10000}</p>
                                             </div>
                                         </div>
 
-
-                                        {/* Course item START */}
-                                        <div className="row g-2 shadow p-2 mb-4 rounded-3">
-                                            <div className="col-sm-4">
-                                                <img src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg" className="rounded" style={{ width: "100px", height: "70px", objectFit: "cover" }} alt="" />
-                                            </div>
-                                            <div className="col-sm-8">
-                                                <h6 className="mb-0">
-                                                    <a href="#" className='text-decoration-none text-dark'>Building Scalable APIs with GraphQL</a>
-                                                </h6>
-                                                <div className="d-flex justify-content-between align-items-center mt-3">
-                                                    <span className="text-success fw-bold">$150</span>
-                                                    <div className="text-primary-hover">
-                                                        <Link to="/cart/" className="text-body me-2">
-                                                            <i className="bi bi-pencil-square me-1" />
-                                                            Edit
-                                                        </Link>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        {/* Course item START */}
-                                        <div className="row g-2 shadow p-2 mb-4 rounded-3">
-                                            <div className="col-sm-4">
-                                                <img src="https://eduport.webestica.com/assets/images/courses/4by3/07.jpg" className="rounded" style={{ width: "100px", height: "70px", objectFit: "cover" }} alt="" />
-                                            </div>
-                                            <div className="col-sm-8">
-                                                <h6 className="mb-0">
-                                                    <a href="#" className='text-decoration-none text-dark'>Building Scalable APIs with GraphQL</a>
-                                                </h6>
-                                                <div className="d-flex justify-content-between align-items-center mt-3">
-                                                    <span className="text-success fw-bold">$150</span>
-                                                    <div className="text-primary-hover">
-                                                        <Link to="/cart/" className="text-body me-2">
-                                                            <i className="bi bi-pencil-square me-1" />
-                                                            Edit
-                                                        </Link>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div className="input-group mt-5">
                                             <input className="form-control form-control" placeholder="COUPON CODE" />
                                             <button type="button" className="btn btn-primary">Apply</button>
                                         </div>
 
-
                                         <div className="p-3 shadow rounded-3 mt-3">
                                             <h4 className="mb-3">Cart Total</h4>
-                                            <ul class="list-group mb-3">
-                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <ul className="list-group mb-3">
+                                                <li className="list-group-item d-flex justify-content-between align-items-center">
                                                     Sub Total
-                                                    <span>$10.99</span>
+                                                    <span>${cartTotal.toFixed(2)}</span>
                                                 </li>
-                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <li className="list-group-item d-flex justify-content-between align-items-center">
                                                     Discount
-                                                    <span>$2.99</span>
+                                                    <span>$0.00</span>
                                                 </li>
-                                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                    Tax
-                                                    <span>$0.99</span>
+                                                <li className="list-group-item d-flex justify-content-between align-items-center">
+                                                    Tax (10%)
+                                                    <span>${tax.toFixed(2)}</span>
                                                 </li>
-                                                <li class="list-group-item d-flex fw-bold justify-content-between align-items-center">
+                                                <li className="list-group-item d-flex fw-bold justify-content-between align-items-center">
                                                     Total
-                                                    <span className='fw-bold'>$8.99</span>
+                                                    <span className='fw-bold'>${total.toFixed(2)}</span>
                                                 </li>
                                             </ul>
-                                            <div className="d-grid">
-                                                <Link to={`/success/txn_id/`} className="btn btn-lg btn-success mt-2"> Pay With PayPal</Link>
-                                                <Link to={`/success/txn_id/`} className="btn btn-lg btn-success mt-2"> Pay With Stripe</Link>
+                                            <div className="d-grid gap-3 mt-3">
+                                                <div className="border p-4 rounded-3 d-flex justify-content-between align-items-center cursor-pointer hover-shadow" role="button" onClick={() => window.open('https://www.acledabank.com.kh/', '_blank')} style={{transition: 'all 0.3s'}}>
+                                                    <div className="d-flex align-items-center">
+                                                        <img src="/acleda.png" alt="ACLEDA Bank" className="me-3 rounded" style={{height: '60px', width: '60px', objectFit: 'contain'}} />
+                                                        <div className="text-start">
+                                                            <h6 className="mb-0 fw-bold title-font">ACLEDA Bank</h6>
+                                                            <small className="text-muted">Pay securely with your ACLEDA account</small>
+                                                        </div>
+                                                    </div>
+                                                    <i className="bi bi-box-arrow-up-right text-muted fs-5"></i>
+                                                </div>
+
+                                                <div className="border p-4 rounded-3 d-flex justify-content-between align-items-center cursor-pointer hover-shadow" role="button" onClick={() => window.open('https://www.ababank.com/', '_blank')} style={{transition: 'all 0.3s'}}>
+                                                    <div className="d-flex align-items-center">
+                                                        <img src="/aba.png" alt="ABA Bank" className="me-3 rounded" style={{height: '60px', width: '60px', objectFit: 'contain'}} />
+                                                        <div className="text-start">
+                                                            <h6 className="mb-0 fw-bold title-font">ABA Bank</h6>
+                                                            <small className="text-muted">Quick payment via ABA Mobile</small>
+                                                        </div>
+                                                    </div>
+                                                    <i className="bi bi-box-arrow-up-right text-muted fs-5"></i>
+                                                </div>
                                             </div>
-                                            <p className="small mb-0 mt-2 text-center">
+                                            <p className="small mb-0 mt-3 text-center">
                                                 By proceeding to payment, you agree to these{" "}<a href="#"> <strong>Terms of Service</strong></a>
                                             </p>
                                         </div>
@@ -293,4 +211,4 @@ function Checkout() {
     )
 }
 
-export default Checkout
+export default Checkout;

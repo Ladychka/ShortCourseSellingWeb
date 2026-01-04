@@ -14,6 +14,7 @@ import CreateNewPassword from './views/auth/CreateNewPassword';
 import Index from './views/base/Index';
 import CourseDetail from './views/base/CourseDetail';
 import Cart from './views/base/Cart';
+import Checkout from './views/base/Checkout';
 import Success from './views/base/Success';
 import Search from './views/base/Search';
 
@@ -23,6 +24,7 @@ import StudentProfile from './views/student/Profile';
 import StudentDashboard from './views/student/Dashboard';
 import StudentQA from './views/student/QA';
 import Wishlist from './views/student/Wishlist';
+import StudentCourseLectureDetail from './views/student/StudentCourseLectureDetail';
 
 // instructor views
 import InstructorCourses from "./views/instructor/Courses";
@@ -57,11 +59,13 @@ function App() {
           <Route path="/" element={<Index />} />
           <Route path="/course-detail/:slug" element={<CourseDetail />} />
           <Route path="/cart/" element={<Cart />} />
+          <Route path="/checkout/" element={<Checkout />} />
           <Route path="/success/" element={<Success />} />
           <Route path="/search/" element={<Search />} />
 
           {/* student */}
           <Route path="student/courses/" element={<StudentCourses />} />
+          <Route path="student/courses/:slug/" element={<PrivateRoute><StudentCourseLectureDetail /></PrivateRoute>} />
           <Route path="student/profile/" element={<PrivateRoute><StudentProfile /></PrivateRoute>} />
           <Route path="student/dashboard/" element={<PrivateRoute><StudentDashboard /></PrivateRoute>} />
           <Route path="student/question-answer/" element={<PrivateRoute><StudentQA /></PrivateRoute>} />

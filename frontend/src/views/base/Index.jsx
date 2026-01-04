@@ -11,6 +11,7 @@ function Index() {
     const navigate = useNavigate();
     const [featured, setFeatured] = useState([]);
     const [reviews, setReviews] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
@@ -18,12 +19,14 @@ function Index() {
     useEffect(() => {
         const run = async () => {
             try {
-                const [fc, rv] = await Promise.all([
+                const [fc, rv, cats] = await Promise.all([
                     api.get(API.HOME_FEATURED),
-                    api.get(API.HOME_REVIEWS)
+                    api.get(API.HOME_REVIEWS),
+                    api.get(API.CATEGORY_LIST)
                 ]);
                 setFeatured(fc.data || []);
                 setReviews(rv.data || []);
+                setCategories(cats.data || []);
             } catch (e) {
                 setError(e.message);
             } finally {
@@ -37,7 +40,7 @@ function Index() {
         <>
             <BaseHeader />
 
-            <section className="py-5 hero-gradient position-relative overflow-hidden">
+            <section className="pb-5 hero-gradient position-relative overflow-hidden" style={{ paddingTop: "120px" }}>
                 <div className="container">
                     <div className="row align-items-center">
                         <div className="col-lg-6">
@@ -49,8 +52,15 @@ function Index() {
                             </form>
                             <div className='d-flex flex-wrap gap-2 small'>
                                 <span className='text-muted'>Popular:</span>
-                                {['python', 'react', 'backend', 'frontend', 'ui/ux', 'data science'].map(tag => (
-                                    <button key={tag} type='button' onClick={() => { setSearch(tag); navigate(`/search/?q=${encodeURIComponent(tag)}`) }} className='btn btn-sm btn-outline-secondary rounded-pill'>{tag}</button>
+                                {categories.map(cat => (
+                                    <button 
+                                        key={cat.id || cat.slug} 
+                                        type='button' 
+                                        onClick={() => navigate(`/search/?category=${cat.slug}`)} 
+                                        className='btn btn-sm btn-outline-secondary rounded-pill'
+                                    >
+                                        {cat.title}
+                                    </button>
                                 ))}
                             </div>
                         </div>

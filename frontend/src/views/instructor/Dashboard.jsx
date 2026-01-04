@@ -72,7 +72,7 @@ function Dashboard() {
     return (
         <>
             <BaseHeader />
-            <section className="pt-5 pb-5">
+            <section className="pb-5" style={{ paddingTop: "120px" }}>
                 <div className="container">
                     <Header />
                     <div className="row mt-0 mt-md-4">
@@ -137,7 +137,7 @@ function Dashboard() {
                                                     <td><span className='badge bg-warning text-dark'>{course.teacher_status}</span></td>
                                                     <td>{new Date(course.date).toLocaleDateString()}</td>
                                                     <td>
-                                                        <button className='btn btn-primary btn-sm me-1'><i className='fas fa-edit'></i></button>
+                                                        <Link to={`/instructor/course-edit/${course.slug}`} className='btn btn-primary btn-sm me-1'><i className='fas fa-edit'></i></Link>
                                                         <button className='btn btn-danger btn-sm me-1'><i className='fas fa-trash'></i></button>
                                                         <button className='btn btn-secondary btn-sm'><i className='fas fa-eye'></i></button>
                                                     </td>

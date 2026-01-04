@@ -196,10 +196,10 @@ class EnrolledCourseSerializer(serializers.ModelSerializer):
             self.Meta.depth = 3
 
 class CourseSerializer(serializers.ModelSerializer):
-    students=EnrolledCourseSerializer(many=True)
-    curriculum=VariantSerializer(many=True)
-    lectures=VariantItemSerializer(many=True)
-    reviews=ReviewSerializer(many=True)
+    students=EnrolledCourseSerializer(many=True, read_only=True)
+    curriculum=VariantSerializer(many=True, read_only=True)
+    lectures=VariantItemSerializer(many=True, read_only=True)
+    reviews=ReviewSerializer(many=True, read_only=True)
     class Meta:
         model = api_models.Course
         fields = [
@@ -226,6 +226,9 @@ class CourseSerializer(serializers.ModelSerializer):
             'rating_count',
             'reviews'
         ]
+        extra_kwargs = {
+            'teacher': {'read_only': True},
+        }
 
     def __init__(self, *args, **kwargs):
         super(CourseSerializer,self).__init__(*args, **kwargs)

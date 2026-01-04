@@ -9,7 +9,9 @@ from django.db.models import Count, Sum
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 from datetime import timedelta
+from datetime import timedelta
 from userauths.models import User, Profile
+from api.models import Course, Teacher, Category, Variant, VariantItem
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, status
@@ -18,6 +20,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import NotFound, PermissionDenied
+from api.models import EnrolledCourse
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = api_serializer.MyTokenObtainPairSerializer
@@ -74,15 +78,15 @@ class PasswordResetEmailVerifyAPIView(generics.RetrieveAPIView):
             print("link ====", link)
         return user
 
-class PasswordChangeAPIView(generics.UpdateAPIView):
+class PasswordChangeAPIView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = api_serializer.UserSerializer
 
-    def create(self,request,*args, **kwargs):
+    def create(self, request, *args, **kwargs):
         payload = request.data  
 
         otp = payload['otp']
-        uuidb64 = payload['uuidb64']
+        uuidb64 = payload['uidb64'] # Frontend sends 'uidb64', verify backend expects 'uuidb64' or 'uidb64'
         password = request.data['password']
 
         user = User.objects.get(id=uuidb64, otp=otp)
@@ -91,7 +95,7 @@ class PasswordChangeAPIView(generics.UpdateAPIView):
             user.otp = ""
             user.save()
 
-            return Response({"message": "Password changed successfully."}, status=status.HTTP_200_OK)
+            return Response({"message": "Password changed successfully."}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "User Does Not Exist"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -152,6 +156,58 @@ class InstructorCourseListAPIView(generics.ListAPIView):
             'page_size': page_size,
             'results': serializer.data,
         })
+
+class InstructorCourseDetailAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = api_serializer.CourseSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        return self.request.user.course_set.all()
+
+class StudentCourseListAPIView(generics.ListAPIView):
+    serializer_class = api_serializer.EnrolledCourseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.request.user.enrolledcourse_set.all().order_by('-date')
+
+class StudentCourseDetailAPIView(generics.RetrieveAPIView):
+    serializer_class = api_serializer.CourseSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'slug'
+
+    def get_object(self):
+        slug = self.kwargs['slug']
+        user = self.request.user
+        
+        try:
+            course = Course.objects.get(slug=slug)
+        except Course.DoesNotExist:
+            raise NotFound("Course not found")
+
+        # Check enrollment
+        if not EnrolledCourse.objects.filter(user=user, course=course).exists():
+            raise PermissionDenied("You are not enrolled in this course")
+            
+        return course
+
+class CourseCreateAPIView(generics.CreateAPIView):
+    queryset = Course.objects.all()
+    serializer_class = api_serializer.CourseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        from api.models import Teacher
+        
+        # Ensure user has a Teacher profile
+        teacher, created = Teacher.objects.get_or_create(user=self.request.user)
+        if created:
+            teacher.full_name = self.request.user.full_name or self.request.user.username
+            teacher.save()
+            
+        serializer.save(teacher=teacher)
+
 
 class InstructorRevenueTrendAPIView(generics.GenericAPIView):
     serializer_class = api_serializer.RevenueDaySerializer
@@ -231,8 +287,80 @@ def search_course(request):
     from api.serializer import CourseSerializer
     
     query = request.GET.get('q')
+    category_slug = request.GET.get('category')
+    
+    courses = Course.objects.filter(platform_status='active', teacher_status='available')
+    
     if query:
-        courses = Course.objects.filter(title__icontains=query, platform_status='active', teacher_status='available')
-        serializer = CourseSerializer(courses, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response([], status=status.HTTP_200_OK)
+        courses = courses.filter(title__icontains=query)
+    
+    if category_slug:
+        courses = courses.filter(category__slug=category_slug)
+        
+    serializer = CourseSerializer(courses, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def category_list(request):
+    from api.models import Category
+    from api.serializer import CategorySerializer
+    
+    # Only show active categories or categories with courses
+    categories = Category.objects.filter(active=True)
+    serializer = CategorySerializer(categories, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CourseVariantCreateAPIView(generics.CreateAPIView):
+    queryset = Variant.objects.all()
+    serializer_class = api_serializer.VariantSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        course_id = request.data.get('course_id')
+        title = request.data.get('title')
+        course = Course.objects.get(id=course_id)
+        
+        variant = Variant.objects.create(course=course, title=title)
+        return Response(api_serializer.VariantSerializer(variant).data, status=status.HTTP_201_CREATED)
+
+class CourseVariantDeleteAPIView(generics.DestroyAPIView):
+    queryset = Variant.objects.all()
+    serializer_class = api_serializer.VariantSerializer
+    permission_classes = [AllowAny]
+    
+    def get_object(self):
+        variant_id = self.kwargs['variant_id']
+        return Variant.objects.get(id=variant_id)
+
+class CourseVariantItemCreateAPIView(generics.CreateAPIView):
+    queryset = VariantItem.objects.all()
+    serializer_class = api_serializer.VariantItemSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        variant_id = request.data.get('variant_id')
+        title = request.data.get('title')
+        description = request.data.get('description')
+        preview = request.data.get('preview')
+        file = request.data.get('file')
+        
+        variant = Variant.objects.get(id=variant_id)
+        
+        item = VariantItem.objects.create(
+            variant=variant,
+            title=title,
+            description=description,
+            preview=preview,
+            file=file
+        )
+        return Response(api_serializer.VariantItemSerializer(item).data, status=status.HTTP_201_CREATED)
+
+class CourseVariantItemDeleteAPIView(generics.DestroyAPIView):
+    queryset = VariantItem.objects.all()
+    serializer_class = api_serializer.VariantItemSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        variant_item_id = self.kwargs['variant_item_id']
+        return VariantItem.objects.get(id=variant_item_id)

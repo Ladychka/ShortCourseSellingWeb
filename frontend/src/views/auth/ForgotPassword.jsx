@@ -28,27 +28,28 @@ const handleEmailChange = async(e) => {
     <>
       <BaseHeader />
 
-      <section className="container d-flex flex-column vh-100" style={{ marginTop: "150px" }}>
-        <div className="row align-items-center justify-content-center g-0 h-lg-100 py-8">
-          <div className="col-lg-5 col-md-8 py-8 py-xl-0">
-            <div className="card shadow">
-              <div className="card-body p-6">
+      <section className="container d-flex flex-column vh-100 align-items-center justify-content-center" style={{ marginTop: "100px" }}>
+        <div className="row justify-content-center w-100">
+          <div className="col-md-8 col-lg-6 col-xxl-5">
+            <div className="card shadow border-0" style={{borderRadius: '20px'}}>
+              <div className="card-body p-5">
                 <div className="mb-4">
-                  <h1 className="mb-1 fw-bold">Forgot Password</h1>
-                  <span>
+                  <h1 className="mb-1 fw-bold display-6" style={{color: '#1f2937'}}>Forgot Password</h1>
+                  <span className="text-muted">
                     Let's help you get back into your account
                   </span>
                 </div>
                 <form className="needs-validation" noValidate="" onSubmit={handleEmailChange}>
-                  <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Email Address</label>
+                  <div className="mb-4">
+                    <label htmlFor="email" className="form-label fw-medium text-dark">Email Address</label>
                     <input
                       type="email"
                       id="email"
                       className="form-control"
                       name="email"
-                      placeholder="johndoe@gmail.com"
+                      placeholder="lala@gmail.com"
                       required=""
+                      style={{backgroundColor: '#eef2f6', border: 'none', padding: '12px'}}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
@@ -56,13 +57,13 @@ const handleEmailChange = async(e) => {
                   <div>
                     <div className="d-grid">
                       {isLoading === true && (
-                        <button type="button" className="btn btn-primary" disabled>
+                        <button type="button" className="btn btn-primary btn-lg" disabled>
                           Sending...
                         </button>
                       )}
                       {!isLoading && (
-                        <button type="submit" className="btn btn-primary">
-                          Reset Password <i className='fas fa-arrow-right'></i>
+                        <button type="submit" className="btn btn-primary btn-lg" style={{backgroundColor: '#4b5563', borderColor: '#4b5563'}}>
+                          Reset Password <i className='fas fa-arrow-right ms-2'></i>
                         </button>
                       )}
                     </div>

@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { API } from '../../utils/apiRoutes';
+import useAxios from '../../utils/useAxios';
 
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
@@ -7,19 +9,42 @@ import Sidebar from './Partials/Sidebar'
 import Header from './Partials/Header'
 
 function Courses() {
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [query, setQuery] = useState("");
+    const api = useAxios();
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const { data } = await api.get(API.STUDENT_COURSES);
+                setCourses(data);
+            } catch (e) {
+                console.error(e);
+                setError("Failed to load your courses.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCourses();
+    }, []);
+
+    const filteredCourses = courses.filter(c => 
+        c.course?.title?.toLowerCase().includes(query.toLowerCase())
+    );
+
     return (
         <>
             <BaseHeader />
 
             <section className="pt-5 pb-5">
                 <div className="container">
-                    {/* Header Here */}
                     <Header />
                     <div className="row mt-0 mt-md-4">
-                        {/* Sidebar Here */}
                         <Sidebar />
                         <div className="col-lg-9 col-md-8 col-12">
-                            <h4 className="mb-0 mb-4"> <i className='fas fa-shopping-cart'></i> My Courses</h4>
+                            <h4 className="mb-0 mb-4"> <i className='fas fa-book'></i> My Learning</h4>
 
                             <div className="card mb-4">
                                 <div className="card-header">
@@ -28,68 +53,74 @@ function Courses() {
                                     </span>
                                 </div>
                                 <div className="card-body">
-                                    <form className="row gx-3">
+                                    <form className="row gx-3" onSubmit={e => e.preventDefault()}>
                                         <div className="col-lg-12 col-md-12 col-12 mb-lg-0 mb-2">
                                             <input
                                                 type="search"
                                                 className="form-control"
                                                 placeholder="Search Your Courses"
+                                                value={query}
+                                                onChange={e => setQuery(e.target.value)}
                                             />
                                         </div>
                                     </form>
                                 </div>
-                                <div className="table-responsive overflow-y-hidden">
+                                <div className="table-responsive">
                                     <table className="table mb-0 text-nowrap table-hover table-centered text-nowrap">
                                         <thead className="table-light">
                                             <tr>
-                                                <th>Courses</th>
+                                                <th>Course</th>
                                                 <th>Date Enrolled</th>
                                                 <th>Lectures</th>
-                                                <th>Completed Lecture</th>
+                                                <th>Progress</th>
                                                 <th>Action</th>
-                                                <th />
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>
-                                                    <div className="d-flex align-items-center">
-                                                        <div>
-                                                            <a href="#">
-                                                                <img
-                                                                    src="https://geeksui.codescandy.com/geeks/assets/images/course/course-react.jpg"
-                                                                    alt="course"
+                                            {loading && (
+                                                <tr><td colSpan="5" className='text-center py-5'>Loading your courses...</td></tr>
+                                            )}
+                                            {!loading && filteredCourses.length === 0 && (
+                                                <tr><td colSpan="5" className='text-center py-5'>No courses found. <Link to="/search/">Browse Courses</Link></td></tr>
+                                            )}
+                                            {filteredCourses.map(enrolled => (
+                                                <tr key={enrolled.id}>
+                                                    <td>
+                                                        <div className="d-flex align-items-center">
+                                                            <Link to={`/course-detail/${enrolled.course.slug}`}>
+                                                                <img 
+                                                                    src={enrolled.course.image} 
+                                                                    alt={enrolled.course.title} 
                                                                     className="rounded img-4by3-lg"
-                                                                    style={{ width: "100px", height: "70px", borderRadius: "50%", objectFit: "cover" }}
+                                                                    style={{width: '100px', height:'70px', objectFit:'contain', padding:'4px', background:'#f8f9fa', borderRadius:'8px'}}
                                                                 />
-                                                            </a>
+                                                            </Link>
+                                                            <div className="ms-3">
+                                                                <h5 className="mb-0">
+                                                                    <Link to={`/course-detail/${enrolled.course.slug}`} className="text-inherit text-decoration-none text-dark">
+                                                                        {enrolled.course.title}
+                                                                    </Link>
+                                                                </h5>
+                                                                <span className='badge bg-primary me-1'>{enrolled.course.level}</span>
+                                                                <small className="text-muted">By {enrolled.course.teacher?.full_name}</small>
+                                                            </div>
                                                         </div>
-                                                        <div className="ms-3">
-                                                            <h4 className="mb-1 h5">
-                                                                <a href="#" className="text-inherit text-decoration-none text-dark">
-                                                                    Learn React
-                                                                </a>
-                                                            </h4>
-                                                            <ul className="list-inline fs-6 mb-0">
-                                                                <li className="list-inline-item">
-                                                                    <i className='bi bi-reception-4'></i>
-                                                                    <span className='ms-1'>Beginner</span>
-                                                                </li>
-                                                                <li className="list-inline-item">
-                                                                    <i className='bi bi-mic'></i>
-                                                                    <span className='ms-1'>English</span>
-                                                                </li>
-                                                            </ul>
+                                                    </td>
+                                                    <td>{new Date(enrolled.date).toLocaleDateString()}</td>
+                                                    <td>{enrolled.lectures?.length || 0}</td>
+                                                    <td>
+                                                        <div className="progress" style={{height: 6}}>
+                                                            <div className="progress-bar" role="progressbar" style={{width: `${Math.round((enrolled.completed_lessons?.length || 0) / (enrolled.lectures?.length || 1) * 100)}%`}} aria-valuenow={0} aria-valuemin={0} aria-valuemax={100}></div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                                <td><p className='mt-3'>7/11/2025</p></td>
-                                                <td><p className='mt-3'>15</p></td>
-                                                <td><p className='mt-3'>7</p></td>
-                                                <td>
-                                                    <Link to={`/student/courses/course_id/`} className='btn btn-primary btn-sm mt-3'>Continue Course <i className='fas fa-arrow-right'></i></Link>
-                                                </td>
-                                            </tr>
+                                                        <small>{Math.round((enrolled.completed_lessons?.length || 0) / (enrolled.lectures?.length || 1) * 100)}% Completed</small>
+                                                    </td>
+                                                    <td>
+                                                        <Link to={`/course-detail/${enrolled.course.slug}`} className="btn btn-primary btn-sm">
+                                                            Start Learning <i className='fas fa-play ms-1'></i>
+                                                        </Link>
+                                                    </td>
+                                                </tr>
+                                            ))}
                                         </tbody>
                                     </table>
                                 </div>
@@ -98,7 +129,7 @@ function Courses() {
                     </div>
                 </div>
             </section>
-
+            
             <BaseFooter />
         </>
     )
