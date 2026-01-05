@@ -43,12 +43,37 @@ function StudentCourseLectureDetail() {
     }
   };
 
+  // Helper to flatten curriculum for easier navigation
+  const getAllLessons = () => {
+      if (!course?.curriculum) return [];
+      return course.curriculum.flatMap(variant => variant.variant_items || []);
+  };
+
+  const handleNextLesson = () => {
+      const allLessons = getAllLessons();
+      const currentIndex = allLessons.findIndex(l => l.id === activeLesson?.id);
+      if (currentIndex !== -1 && currentIndex < allLessons.length - 1) {
+          setActiveLesson(allLessons[currentIndex + 1]);
+      }
+  };
+
+  const handlePrevLesson = () => {
+      const allLessons = getAllLessons();
+      const currentIndex = allLessons.findIndex(l => l.id === activeLesson?.id);
+      if (currentIndex > 0) {
+          setActiveLesson(allLessons[currentIndex - 1]);
+      }
+  };
+
+
   if (loading) {
     return (
         <>
             <BaseHeader />
             <div className="container py-5 text-center">
-                <h2>Loading course content...</h2>
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
             </div>
             <BaseFooter />
         </>
@@ -77,36 +102,51 @@ function StudentCourseLectureDetail() {
             
             {/* Main Video Area */}
             <div className="col-lg-8 col-md-8 col-12">
-              <section className="bg-dark py-5 rounded position-relative" style={{minHeight: "400px"}}>
-                <div className="container d-flex justify-content-center align-items-center h-100">
-                    {activeLesson ? (
-                        <div className="w-100" style={{maxWidth: "100%"}}>
-                            <ReactPlayer
-                                url={activeLesson.file}
-                                width="100%"
-                                height="500px"
-                                controls={true}
-                                playing={true}
-                            />
-                            <div className="mt-3 text-white">
-                                <h3>{activeLesson.title}</h3>
-                                <p>{activeLesson.description}</p>
-                            </div>
+              <div className="card shadow rounded-2 mb-4">
+                  <div className="card-body p-0">
+                      <div className="bg-dark rounded-top position-relative" style={{minHeight: "400px"}}>
+                        <div className="d-flex justify-content-center align-items-center h-100">
+                            {activeLesson ? (
+                                <div className="w-100" style={{maxWidth: "100%"}}>
+                                    <ReactPlayer
+                                        url={activeLesson.file}
+                                        width="100%"
+                                        height="500px"
+                                        controls={true}
+                                        playing={false}
+                                    />
+                                </div>
+                            ) : (
+                                <h3 className="text-white">Select a lesson to start watching</h3>
+                            )}
                         </div>
-                    ) : (
-                        <h3 className="text-white">Select a lesson to start watching</h3>
-                    )}
-                </div>
-              </section>
+                      </div>
+                      <div className="p-4">
+                          <div className="d-flex justify-content-between align-items-center mb-3">
+                              <h3 className="mb-0">{activeLesson?.title}</h3>
+                              <div>
+                                  <button onClick={handlePrevLesson} className="btn btn-outline-secondary btn-sm me-2" disabled={!activeLesson || getAllLessons().findIndex(l => l.id === activeLesson.id) === 0}>
+                                      <i className="fas fa-chevron-left me-1"></i> Prev
+                                  </button>
+                                  <button onClick={handleNextLesson} className="btn btn-primary btn-sm" disabled={!activeLesson || getAllLessons().findIndex(l => l.id === activeLesson.id) === getAllLessons().length - 1}>
+                                      Next <i className="fas fa-chevron-right ms-1"></i>
+                                  </button>
+                              </div>
+                          </div>
+                          <p className="text-secondary">{activeLesson?.description || "No description available for this lesson."}</p>
+                      </div>
+                  </div>
+              </div>
             </div>
 
             {/* Sidebar / Curriculum */}
             <div className="col-lg-4 col-md-4 col-12 mt-4 mt-md-0">
-                <div className="card shadow rounded-2">
+                <div className="card shadow rounded-2" style={{maxHeight: '800px', display: 'flex', flexDirection: 'column'}}>
                     <div className="card-header border-bottom px-4 pt-3 pb-3">
                         <h5 className="mb-0">Course Content</h5>
+                        <p className="mb-0 small text-muted">{getAllLessons().length} Lectures</p>
                     </div>
-                    <div className="card-body p-0">
+                    <div className="card-body p-0" style={{overflowY: 'auto', flex: 1}}>
                         <div className="accordion accordion-flush" id="accordionCurriculum">
                             {course.curriculum?.map((variant, index) => (
                                 <div className="accordion-item" key={variant.id}>
@@ -118,8 +158,9 @@ function StudentCourseLectureDetail() {
                                             data-bs-target={`#collapse-${variant.id}`}
                                             aria-expanded={index === 0 ? "true" : "false"}
                                             aria-controls={`collapse-${variant.id}`}
+                                            style={{backgroundColor: '#f8f9fa'}}
                                         >
-                                            {variant.title}
+                                            <span className="fw-bold">{variant.title}</span>
                                         </button>
                                     </h2>
                                     <div
@@ -133,16 +174,16 @@ function StudentCourseLectureDetail() {
                                                 {variant.variant_items?.map((item) => (
                                                     <li 
                                                         key={item.id} 
-                                                        className={`list-group-item list-group-item-action cursor-pointer ${activeLesson?.id === item.id ? "bg-light fw-bold text-primary" : ""}`}
+                                                        className={`list-group-item list-group-item-action cursor-pointer border-0 ${activeLesson?.id === item.id ? "bg-primary-subtle border-start border-4 border-primary" : ""}`}
                                                         onClick={() => setActiveLesson(item)}
                                                         style={{cursor: 'pointer'}}
                                                     >
                                                         <div className="d-flex justify-content-between align-items-center">
-                                                            <div>
-                                                                <i className={`fas ${activeLesson?.id === item.id ? "fa-play-circle" : "fa-circle-play"} me-2 opacity-50`}></i>
-                                                                {item.title}
+                                                            <div className="text-truncate" style={{maxWidth: '220px'}}>
+                                                                <i className={`fas ${activeLesson?.id === item.id ? "fa-circle-play text-primary" : "fa-play-circle text-muted"} me-2`}></i>
+                                                                <span className={activeLesson?.id === item.id ? "fw-semibold text-primary" : "text-dark"}>{item.title}</span>
                                                             </div>
-                                                            <small className="text-muted">{item.duration}</small>
+                                                            <small className="text-muted">{item.duration || item.content_duration || '0m'}</small>
                                                         </div>
                                                     </li>
                                                 ))}

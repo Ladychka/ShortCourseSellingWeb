@@ -87,7 +87,7 @@ function Courses() {
                                                 <tr key={enrolled.id}>
                                                     <td>
                                                         <div className="d-flex align-items-center">
-                                                            <Link to={`/course-detail/${enrolled.course.slug}`}>
+                                                            <Link to={`/student/courses/${enrolled.course.slug}/`}>
                                                                 <img 
                                                                     src={enrolled.course.image} 
                                                                     alt={enrolled.course.title} 
@@ -97,7 +97,7 @@ function Courses() {
                                                             </Link>
                                                             <div className="ms-3">
                                                                 <h5 className="mb-0">
-                                                                    <Link to={`/course-detail/${enrolled.course.slug}`} className="text-inherit text-decoration-none text-dark">
+                                                                    <Link to={`/student/courses/${enrolled.course.slug}/`} className="text-inherit text-decoration-none text-dark">
                                                                         {enrolled.course.title}
                                                                     </Link>
                                                                 </h5>
@@ -115,7 +115,7 @@ function Courses() {
                                                         <small>{Math.round((enrolled.completed_lessons?.length || 0) / (enrolled.lectures?.length || 1) * 100)}% Completed</small>
                                                     </td>
                                                     <td>
-                                                        <Link to={`/course-detail/${enrolled.course.slug}`} className="btn btn-primary btn-sm">
+                                                        <Link to={`/student/courses/${enrolled.course.slug}/`} className="btn btn-primary btn-sm">
                                                             Start Learning <i className='fas fa-play ms-1'></i>
                                                         </Link>
                                                     </td>

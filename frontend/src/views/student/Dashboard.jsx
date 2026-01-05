@@ -1,13 +1,43 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
 import Sidebar from './Partials/Sidebar'
 import Header from './Partials/Header'
-
+import useAxios from '../../utils/useAxios'
+import { API } from '../../utils/apiRoutes'
 
 function Dashboard() {
+    const [stats, setStats] = useState({
+        total_courses: 0,
+        completed_lessons: 0,
+        achieved_certificates: 0
+    });
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const api = useAxios();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [statsRes, coursesRes] = await Promise.all([
+                    api.get(API.STUDENT_DASHBOARD_STATS),
+                    api.get(API.STUDENT_COURSES)
+                ]);
+                
+                setStats(statsRes.data);
+                setCourses(coursesRes.data);
+            } catch (error) {
+                console.error("Failed to fetch dashboard data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return (
         <>
             <BaseHeader />
@@ -31,7 +61,7 @@ function Dashboard() {
                                         </span>
                                         <div className="ms-4">
                                             <div className="d-flex">
-                                                <h5 className="purecounter mb-0 fw-bold" >0</h5>
+                                                <h5 className="purecounter mb-0 fw-bold" >{stats.total_courses}</h5>
                                             </div>
                                             <p className="mb-0 h6 fw-light">Total Courses</p>
                                         </div>
@@ -45,7 +75,7 @@ function Dashboard() {
                                         </span>
                                         <div className="ms-4">
                                             <div className="d-flex">
-                                                <h5 className="purecounter mb-0 fw-bold" > 0</h5>
+                                                <h5 className="purecounter mb-0 fw-bold" >{stats.completed_lessons}</h5>
                                             </div>
                                             <p className="mb-0 h6 fw-light">Complete lessons</p>
                                         </div>
@@ -59,7 +89,7 @@ function Dashboard() {
                                         </span>
                                         <div className="ms-4">
                                             <div className="d-flex">
-                                                <h5 className="purecounter mb-0 fw-bold" > 0</h5>
+                                                <h5 className="purecounter mb-0 fw-bold" >{stats.achieved_certificates}</h5>
                                             </div>
                                             <p className="mb-0 h6 fw-light">Achieved Certificates</p>
                                         </div>
@@ -94,49 +124,58 @@ function Dashboard() {
                                                 <th>Lectures</th>
                                                 <th>Completed</th>
                                                 <th>Action</th>
-                                                <th />
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>
-                                                    <div className="d-flex align-items-center">
-                                                        <div>
-                                                            <a href="#">
-                                                                <img
-                                                                    src="https://geeksui.codescandy.com/geeks/assets/images/course/course-wordpress.jpg"
-                                                                    alt="course"
-                                                                    className="rounded img-4by3-lg"
-                                                                    style={{ width: "100px", height: "70px", borderRadius: "50%", objectFit: "cover" }}
-                                                                />
-                                                            </a>
+                                            {loading && (
+                                                <tr><td colSpan="5" className="text-center py-4">Loading...</td></tr>
+                                            )}
+                                            {!loading && courses.length === 0 && (
+                                                <tr><td colSpan="5" className="text-center py-4">You are not enrolled in any courses yet.</td></tr>
+                                            )}
+                                            {!loading && courses.map(enrollment => (
+                                                <tr key={enrollment.id}>
+                                                    <td>
+                                                        <div className="d-flex align-items-center">
+                                                            <div>
+                                                                <Link to={`/student/courses/${enrollment.course.slug}/`}>
+                                                                    <img
+                                                                        src={enrollment.course.image || "https://via.placeholder.com/100x70"}
+                                                                        alt={enrollment.course.title}
+                                                                        className="rounded img-4by3-lg"
+                                                                        style={{ width: "100px", height: "70px", borderRadius: "50%", objectFit: "cover" }}
+                                                                    />
+                                                                </Link>
+                                                            </div>
+                                                            <div className="ms-3">
+                                                                <h4 className="mb-1 h5">
+                                                                    <Link to={`/student/courses/${enrollment.course.slug}/`} className="text-inherit text-decoration-none text-dark">
+                                                                        {enrollment.course.title}
+                                                                    </Link>
+                                                                </h4>
+                                                                <ul className="list-inline fs-6 mb-0">
+                                                                    <li className="list-inline-item">
+                                                                        <i className='bi bi-clock-history'></i>
+                                                                        <span className='ms-1'>{enrollment.course.level || "Beginner"}</span>
+                                                                    </li>
+                                                                    <li className="list-inline-item">
+                                                                        <i className='bi bi-reception-4'></i>
+                                                                        <span className='ms-1'>{enrollment.course.language || "English"}</span>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
                                                         </div>
-                                                        <div className="ms-3">
-                                                            <h4 className="mb-1 h5">
-                                                                <a href="#" className="text-inherit text-decoration-none text-dark">
-                                                                    Create a Website with WordPress
-                                                                </a>
-                                                            </h4>
-                                                            <ul className="list-inline fs-6 mb-0">
-                                                                <li className="list-inline-item">
-                                                                    <i className='bi bi-clock-history'></i>
-                                                                    <span className='ms-1'>1hr 30 Mins</span>
-                                                                </li>
-                                                                <li className="list-inline-item">
-                                                                    <i className='bi bi-reception-4'></i>
-                                                                    <span className='ms-1'>Beginner</span>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td><p className='mt-3'>7/11/2025</p></td>
-                                                <td><p className='mt-3'>15</p></td>
-                                                <td><p className='mt-3'>7</p></td>
-                                                <td>
-                                                    <button className='btn btn-primary btn-sm mt-3'>Continue Course <i className='fas fa-arrow-right'></i></button>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                    <td><p className='mt-3'>{new Date(enrollment.date).toLocaleDateString()}</p></td>
+                                                    <td><p className='mt-3'>{enrollment.lectures?.length || 0}</p></td>
+                                                    <td><p className='mt-3'>{enrollment.completed_lessons?.length || 0}</p></td>
+                                                    <td>
+                                                        <Link to={`/student/courses/${enrollment.course.slug}/`} className='btn btn-primary btn-sm mt-3'>
+                                                            Continue Course <i className='fas fa-arrow-right'></i>
+                                                        </Link>
+                                                    </td>
+                                                </tr>
+                                            ))}
                                         </tbody>
                                     </table>
                                 </div>

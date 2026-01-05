@@ -123,6 +123,23 @@ class InstructorDashboardStatsAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(data)
         return Response(serializer.data, status=200)
 
+class StudentDashboardStatsAPIView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        from api.models import EnrolledCourse, CompletedLesson, Certificate
+        
+        total_courses = EnrolledCourse.objects.filter(user=user).count()
+        completed_lessons = CompletedLesson.objects.filter(user=user).count()
+        certificates = Certificate.objects.filter(user=user).count()
+        
+        return Response({
+            'total_courses': total_courses,
+            'completed_lessons': completed_lessons,
+            'achieved_certificates': certificates
+        })
+
 class InstructorCourseListAPIView(generics.ListAPIView):
     serializer_class = api_serializer.InstructorCourseMiniSerializer
     permission_classes = [IsAuthenticated]
@@ -314,29 +331,39 @@ def category_list(request):
 class CourseVariantCreateAPIView(generics.CreateAPIView):
     queryset = Variant.objects.all()
     serializer_class = api_serializer.VariantSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         course_id = request.data.get('course_id')
         title = request.data.get('title')
         course = Course.objects.get(id=course_id)
         
+        # Security Check: Ensure user is the teacher of this course
+        if course.teacher.user != request.user:
+            raise PermissionDenied("You are not authorized to modify this course.")
+
         variant = Variant.objects.create(course=course, title=title)
         return Response(api_serializer.VariantSerializer(variant).data, status=status.HTTP_201_CREATED)
 
 class CourseVariantDeleteAPIView(generics.DestroyAPIView):
     queryset = Variant.objects.all()
     serializer_class = api_serializer.VariantSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self):
         variant_id = self.kwargs['variant_id']
-        return Variant.objects.get(id=variant_id)
+        variant = Variant.objects.get(id=variant_id)
+        
+        # Security Check
+        if variant.course.teacher.user != self.request.user:
+             raise PermissionDenied("You are not authorized to delete this section.")
+             
+        return variant
 
 class CourseVariantItemCreateAPIView(generics.CreateAPIView):
     queryset = VariantItem.objects.all()
     serializer_class = api_serializer.VariantItemSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         variant_id = request.data.get('variant_id')
@@ -347,6 +374,10 @@ class CourseVariantItemCreateAPIView(generics.CreateAPIView):
         
         variant = Variant.objects.get(id=variant_id)
         
+        # Security Check
+        if variant.course.teacher.user != request.user:
+            raise PermissionDenied("You are not authorized to add lessons to this course.")
+
         item = VariantItem.objects.create(
             variant=variant,
             title=title,
@@ -359,8 +390,14 @@ class CourseVariantItemCreateAPIView(generics.CreateAPIView):
 class CourseVariantItemDeleteAPIView(generics.DestroyAPIView):
     queryset = VariantItem.objects.all()
     serializer_class = api_serializer.VariantItemSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         variant_item_id = self.kwargs['variant_item_id']
-        return VariantItem.objects.get(id=variant_item_id)
+        variant_item = VariantItem.objects.get(id=variant_item_id)
+        
+        # Security Check
+        if variant_item.variant.course.teacher.user != self.request.user:
+            raise PermissionDenied("You are not authorized to delete this lesson.")
+
+        return variant_item

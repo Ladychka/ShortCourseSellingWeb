@@ -19,6 +19,7 @@ urlpatterns = [
     path("instructor/course/variant-item/create/", api_views.CourseVariantItemCreateAPIView.as_view()),
     path("instructor/course/variant-item/delete/<variant_item_id>/", api_views.CourseVariantItemDeleteAPIView.as_view()),
     path("student/courses/", api_views.StudentCourseListAPIView.as_view()),
+    path("student/dashboard-stats/", api_views.StudentDashboardStatsAPIView.as_view()),
     path('student/course-detail/<slug>/', api_views.StudentCourseDetailAPIView.as_view(), name='student_course_detail'),
     path("home/featured-courses/", api_views.featured_courses),
     path("home/recent-reviews/", api_views.recent_reviews),
