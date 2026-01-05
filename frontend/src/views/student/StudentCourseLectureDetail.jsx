@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 function StudentCourseLectureDetail() {
   const [course, setCourse] = useState(null);
   const [activeLesson, setActiveLesson] = useState(null);
+  const [completedLessons, setCompletedLessons] = useState([]); // Array of IDs
   const [loading, setLoading] = useState(true);
   const { slug } = useParams();
   const axiosInstance = useAxios();
@@ -23,6 +24,7 @@ function StudentCourseLectureDetail() {
       setLoading(true);
       const response = await axiosInstance.get(API.STUDENT_COURSE_DETAIL + slug + "/");
       setCourse(response.data);
+      setCompletedLessons(response.data.completed_lessons || []);
       
       // Set initial active lesson (first lesson of first section)
       if (response.data.curriculum && response.data.curriculum.length > 0) {
@@ -62,6 +64,37 @@ function StudentCourseLectureDetail() {
       const currentIndex = allLessons.findIndex(l => l.id === activeLesson?.id);
       if (currentIndex > 0) {
           setActiveLesson(allLessons[currentIndex - 1]);
+      }
+  };
+
+  const markLessonAsCompleted = async (variantItemId) => {
+      try {
+          await axiosInstance.post(API.STUDENT_COURSE_COMPLETED_LESSON, {
+              course_id: course.id,
+              variant_item_id: variantItemId
+          });
+          
+          // Update local state
+          if (!completedLessons.includes(variantItemId)) {
+              setCompletedLessons([...completedLessons, variantItemId]);
+          }
+          
+          Swal.fire({
+              toast: true,
+              icon: 'success',
+              title: 'Lesson Completed!',
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 1500
+          });
+
+      } catch (error) {
+          console.error("Error marking lesson as completed", error);
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Could not mark lesson as completed.'
+          });
       }
   };
 
@@ -114,6 +147,7 @@ function StudentCourseLectureDetail() {
                                         height="500px"
                                         controls={true}
                                         playing={false}
+                                        onEnded={() => markLessonAsCompleted(activeLesson.id)}
                                     />
                                 </div>
                             ) : (
@@ -125,14 +159,23 @@ function StudentCourseLectureDetail() {
                           <div className="d-flex justify-content-between align-items-center mb-3">
                               <h3 className="mb-0">{activeLesson?.title}</h3>
                               <div>
-                                  <button onClick={handlePrevLesson} className="btn btn-outline-secondary btn-sm me-2" disabled={!activeLesson || getAllLessons().findIndex(l => l.id === activeLesson.id) === 0}>
-                                      <i className="fas fa-chevron-left me-1"></i> Prev
-                                  </button>
-                                  <button onClick={handleNextLesson} className="btn btn-primary btn-sm" disabled={!activeLesson || getAllLessons().findIndex(l => l.id === activeLesson.id) === getAllLessons().length - 1}>
-                                      Next <i className="fas fa-chevron-right ms-1"></i>
+                                  <button onClick={() => markLessonAsCompleted(activeLesson?.id)} className={`btn btn-sm me-2 ${completedLessons.includes(activeLesson?.id) ? 'btn-success' : 'btn-outline-success'}`} disabled={!activeLesson}>
+                                      <i className="fas fa-check-circle me-1"></i> {completedLessons.includes(activeLesson?.id) ? 'Completed' : 'Mark as Completed'}
                                   </button>
                               </div>
                           </div>
+                           <div className="d-flex justify-content-between align-items-center mb-4">
+                                <div></div>
+                                <div>
+                                    <button onClick={handlePrevLesson} className="btn btn-outline-secondary btn-sm me-2" disabled={!activeLesson || getAllLessons().findIndex(l => l.id === activeLesson.id) === 0}>
+                                        <i className="fas fa-chevron-left me-1"></i> Prev
+                                    </button>
+                                    <button onClick={handleNextLesson} className="btn btn-primary btn-sm" disabled={!activeLesson || getAllLessons().findIndex(l => l.id === activeLesson.id) === getAllLessons().length - 1}>
+                                        Next <i className="fas fa-chevron-right ms-1"></i>
+                                    </button>
+                                </div>
+                           </div>
+
                           <p className="text-secondary">{activeLesson?.description || "No description available for this lesson."}</p>
                       </div>
                   </div>
@@ -144,7 +187,7 @@ function StudentCourseLectureDetail() {
                 <div className="card shadow rounded-2" style={{maxHeight: '800px', display: 'flex', flexDirection: 'column'}}>
                     <div className="card-header border-bottom px-4 pt-3 pb-3">
                         <h5 className="mb-0">Course Content</h5>
-                        <p className="mb-0 small text-muted">{getAllLessons().length} Lectures</p>
+                        <p className="mb-0 small text-muted">{getAllLessons().length} Lectures • {completedLessons.length} Completed</p>
                     </div>
                     <div className="card-body p-0" style={{overflowY: 'auto', flex: 1}}>
                         <div className="accordion accordion-flush" id="accordionCurriculum">
@@ -180,7 +223,11 @@ function StudentCourseLectureDetail() {
                                                     >
                                                         <div className="d-flex justify-content-between align-items-center">
                                                             <div className="text-truncate" style={{maxWidth: '220px'}}>
-                                                                <i className={`fas ${activeLesson?.id === item.id ? "fa-circle-play text-primary" : "fa-play-circle text-muted"} me-2`}></i>
+                                                                {completedLessons.includes(item.id) ? (
+                                                                     <i className="fas fa-check-circle text-success me-2"></i>
+                                                                ) : (
+                                                                    <i className={`fas ${activeLesson?.id === item.id ? "fa-circle-play text-primary" : "fa-play-circle text-muted"} me-2`}></i>
+                                                                )}
                                                                 <span className={activeLesson?.id === item.id ? "fw-semibold text-primary" : "text-dark"}>{item.title}</span>
                                                             </div>
                                                             <small className="text-muted">{item.duration || item.content_duration || '0m'}</small>

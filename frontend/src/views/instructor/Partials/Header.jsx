@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 
 function Header() {
     return (
@@ -17,9 +18,9 @@ function Header() {
                         </div>
                         <div>
                             <div className="d-flex">
-                                <a href="profile-edit.html" className="btn btn-primary btn-sm d-none d-md-block ms-2" > Create New Course <i className='fas fa-plus'></i></a>
-                                <a href="profile-edit.html" className="btn btn-success btn-sm d-none d-md-block ms-2" > Setting <i className='fas fa-gear'></i></a>
-                                <a href="profile-edit.html" className="btn btn-danger btn-sm d-none d-md-block ms-2" > Contact Support <i className='fas fa-phone'></i></a>
+                                <Link to="/instructor/create-course/" className="btn btn-primary btn-sm d-none d-md-block ms-2" > Create New Course <i className='fas fa-plus'></i></Link>
+                                <Link to="/instructor/profile/" className="btn btn-success btn-sm d-none d-md-block ms-2" > Setting <i className='fas fa-gear'></i></Link>
+                                <Link to="/pages/contact-us/" className="btn btn-danger btn-sm d-none d-md-block ms-2" > Contact Support <i className='fas fa-phone'></i></Link>
                             </div>
                         </div>
                     </div>

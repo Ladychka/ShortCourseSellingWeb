@@ -21,6 +21,7 @@ urlpatterns = [
     path("student/courses/", api_views.StudentCourseListAPIView.as_view()),
     path("student/dashboard-stats/", api_views.StudentDashboardStatsAPIView.as_view()),
     path('student/course-detail/<slug>/', api_views.StudentCourseDetailAPIView.as_view(), name='student_course_detail'),
+    path('student/course/completed-lesson/', api_views.StudentCourseCompletedCreateAPIView.as_view(), name='student_course_completed_lesson'),
     path("home/featured-courses/", api_views.featured_courses),
     path("home/recent-reviews/", api_views.recent_reviews),
     path("course-detail/<slug>/", api_views.course_detail),

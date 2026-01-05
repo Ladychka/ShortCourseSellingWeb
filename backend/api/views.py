@@ -21,7 +21,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import NotFound, PermissionDenied
-from api.models import EnrolledCourse
+from api.models import EnrolledCourse, CompletedLesson
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = api_serializer.MyTokenObtainPairSerializer
@@ -190,7 +190,7 @@ class StudentCourseListAPIView(generics.ListAPIView):
         return self.request.user.enrolledcourse_set.all().order_by('-date')
 
 class StudentCourseDetailAPIView(generics.RetrieveAPIView):
-    serializer_class = api_serializer.CourseSerializer
+    serializer_class = api_serializer.StudentCourseDetailSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'slug'
 
@@ -208,6 +208,42 @@ class StudentCourseDetailAPIView(generics.RetrieveAPIView):
             raise PermissionDenied("You are not enrolled in this course")
             
         return course
+
+class StudentCourseCompletedCreateAPIView(generics.CreateAPIView):
+    queryset = CompletedLesson.objects.all()
+    serializer_class = api_serializer.CompletedLessonSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def create(self, request, *args, **kwargs):
+        variant_item_id = request.data.get('variant_item_id')
+        course_id = request.data.get('course_id')
+        
+        course = Course.objects.get(id=course_id)
+        variant_item = VariantItem.objects.get(id=variant_item_id)
+        
+        # Security: Verify enrollment
+        if not EnrolledCourse.objects.filter(user=request.user, course=course).exists():
+            raise PermissionDenied("You are not enrolled in this course")
+            
+        # Toggle completion
+        completed_lesson, created = CompletedLesson.objects.get_or_create(
+            user=request.user,
+            course=course,
+            variant_item=variant_item
+        )
+        
+        if not created:
+            # If it already implies "completed", hitting it again could mean "unmark" or just ignore.
+            # For this implementation, let's treat it as a toggle or ensure it exists.
+            # If standard behavior is 'mark as done', we just return existing.
+            # If we want a toggle, we delete it.
+            # Let's do nothing if it already exists to be idempotent, or 
+            # we can make a separate 'delete' or 'toggle' endpoint.
+            # Let's assume this endpoint is "Mark as Complete". 
+            pass
+            
+        return Response({'message': 'Lesson marked as completed'}, status=status.HTTP_201_CREATED)
+
 
 class CourseCreateAPIView(generics.CreateAPIView):
     queryset = Course.objects.all()

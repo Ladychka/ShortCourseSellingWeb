@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react'
+import { Link } from 'react-router-dom';
 import { API } from '../../utils/apiRoutes';
 import useAxios from '../../utils/useAxios';
 import Sidebar from './Partials/Sidebar'
@@ -78,7 +79,9 @@ function Dashboard() {
                     <div className="row mt-0 mt-md-4">
                         <Sidebar />
                         <div className="col-lg-9 col-md-8 col-12">
-                            <h4 className="mb-4"><i className='bi bi-grid-fill'></i> Dashboard</h4>
+                            <div className="d-flex justify-content-between align-items-center mb-4">
+                                <h4 className="mb-0"><i className='bi bi-grid-fill'></i> Dashboard</h4>
+                            </div>
                             {loading && <div className="alert alert-info">Loading dashboard...</div>}
                             {error && <div className="alert alert-danger">{error}</div>}
                             {!loading && !error && (

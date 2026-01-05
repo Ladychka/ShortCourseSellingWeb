@@ -264,6 +264,34 @@ class InstructorCourseMiniSerializer(serializers.ModelSerializer):
 class RevenueDaySerializer(serializers.Serializer):
     date = serializers.DateField()
     total = serializers.DecimalField(max_digits=12, decimal_places=2)
+
+class StudentCourseDetailSerializer(serializers.ModelSerializer):
+    curriculum = VariantSerializer(many=True, read_only=True)
+    teacher = TeacherSerializer(read_only=True)
+    completed_lessons = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = api_models.Course
+        fields = [
+            'id',
+            'title',
+            'slug',
+            'image',
+            'file',
+            'description',
+            'level',
+            'language',
+            'teacher',
+            'curriculum', # This contains the sections and lessons
+            'completed_lessons', 
+            'platform_status',
+            'date',
+        ]
+
+    def get_completed_lessons(self, obj):
+        user = self.context.get('request').user
+        from api.models import CompletedLesson
+        return CompletedLesson.objects.filter(course=obj, user=user).values_list('variant_item__id', flat=True)
     
         
         

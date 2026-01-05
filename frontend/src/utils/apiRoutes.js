@@ -15,5 +15,6 @@ export const API = {
   CATEGORY_LIST: '/course/category/',
   STUDENT_COURSES: '/student/courses/',
   STUDENT_COURSE_DETAIL: '/student/course-detail/',
+  STUDENT_COURSE_COMPLETED_LESSON: '/student/course/completed-lesson/',
   STUDENT_DASHBOARD_STATS: '/student/dashboard-stats/',
 };
