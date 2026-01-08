@@ -41,6 +41,7 @@ import CourseEdit from "./views/instructor/CourseEdit";
 
 import AboutUs from "./views/pages/AboutUs";
 import Contact from "./views/pages/ContactUs";
+import AdminDashboard from "./views/admin/Dashboard";
 
 
 function App() {
@@ -89,6 +90,9 @@ function App() {
           <Route path="instructor/teacher-notification/" element={<PrivateRoute><TeacherNotification /></PrivateRoute>} />
           <Route path="instructor/create-course/" element={<PrivateRoute><CourseCreate /></PrivateRoute>} />
           <Route path="instructor/course-edit/:slug" element={<PrivateRoute><CourseEdit /></PrivateRoute>} />
+          
+          {/* admin */}
+          <Route path="admin/dashboard/" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
         </Routes>
       </MainWrapper>
     </BrowserRouter>

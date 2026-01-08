@@ -9,6 +9,9 @@ urlpatterns = [
     path("user/register/", api_views.RegisterView.as_view(), name="register"),
     path("user/password-reset/<email>/", api_views.PasswordResetEmailVerifyAPIView.as_view()),
     path("user/create-new-password/", api_views.PasswordChangeAPIView.as_view()),
+    path("user/profile/update/", api_views.ProfileUpdateAPIView.as_view()),
+    path('admin/dashboard/stats/', api_views.AdminDashboardStatsAPIView.as_view()),
+    path('admin/courses/', api_views.AdminCourseListAPIView.as_view()),
     path("instructor/dashboard-stats/", api_views.InstructorDashboardStatsAPIView.as_view()),
     path("instructor/courses-mini/", api_views.InstructorCourseListAPIView.as_view()),
     path("instructor/course-detail/<slug>/", api_views.InstructorCourseDetailAPIView.as_view()),
@@ -27,4 +30,7 @@ urlpatterns = [
     path("course-detail/<slug>/", api_views.course_detail),
     path("course/category/", api_views.category_list),
     path("course/search/", api_views.search_course),
+    path("admin/users/", api_views.AdminUserListAPIView.as_view()),
+    path("instructor/students/", api_views.InstructorStudentListAPIView.as_view()),
+    path("student/wishlist/", api_views.StudentWishlistListCreateAPIView.as_view()),
 ]

@@ -45,10 +45,10 @@ def create_realistic_data():
     teacher, created = Teacher.objects.get_or_create(
         user=teacher_user,
         defaults={
-            'full_name': 'Dr. Angela Yu',
+            'full_name': 'Dr. A',
             'bio': 'Developer and Lead Instructor',
             'about': 'I teach coding to millions of students worldwide.',
-            'country': 'USA'
+            'country': 'Cambodia'
         }
     )
 

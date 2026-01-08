@@ -16,12 +16,33 @@ from api.models import Course, Teacher, Category, Variant, VariantItem
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import NotFound, PermissionDenied
 from api.models import EnrolledCourse, CompletedLesson
+
+class AdminDashboardStatsAPIView(generics.ListAPIView):
+    # Stats for the main Admin Dashboard
+    permission_classes = [IsAdminUser]
+    
+    def get(self, request, *args, **kwargs):
+        total_users = User.objects.count()
+        total_courses = Course.objects.count()
+        total_revenue = CartOrderItem.objects.aggregate(total=models.Sum('total'))['total'] or 0.00
+        
+        return Response({
+            'total_users': total_users,
+            'total_courses': total_courses,
+            'total_revenue': total_revenue
+        })
+
+class AdminCourseListAPIView(generics.ListAPIView):
+    # List all courses for Admin management
+    serializer_class = api_serializer.CourseSerializer
+    permission_classes = [IsAdminUser]
+    queryset = Course.objects.all().order_by('-date')
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = api_serializer.MyTokenObtainPairSerializer
@@ -98,6 +119,42 @@ class PasswordChangeAPIView(generics.CreateAPIView):
             return Response({"message": "Password changed successfully."}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "User Does Not Exist"}, status=status.HTTP_404_NOT_FOUND)
+
+class ProfileUpdateAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = api_serializer.ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # Ensure we return the profile for the *current* user
+        return self.request.user.profile
+
+    def update(self, request, *args, **kwargs):
+        # We might need to handle User fields (fullname) separately or override perform_update
+        # The serializer should ideally handle nested updates, but DRF simple ModelSerializer needs manual help for nested writes usually.
+        # But wait, UserSerializer is in ProfileSerializer as read-only or writable?
+        # Let's check api/serializer.py again. line 53: user = UserSerializer()
+        # By default nested serializers are read-only unless create/update methods are overridden in Serializer.
+        # So we might need to handle 'full_name' etc manually here or in serializer.
+        
+        # Simpler approach: Handle user data manually here if simple, or override serializer.
+        # Let's try to update Profile fields standardly, and User fields manually.
+        
+        profile = self.get_object()
+        user = profile.user
+        
+        # Update User fields
+        if 'full_name' in request.data:
+            user.full_name = request.data['full_name']
+        if 'email' in request.data:
+            user.email = request.data['email']
+            # Note: Changing email might require re-verification or username update logic depending on system.
+            # userauths/models.py save() logic handles username sync if email changes.
+        
+        user.save()
+        
+        # Update Profile fields
+        # Standard generic update for profile fields
+        return super().update(request, *args, **kwargs)
 
 class InstructorDashboardStatsAPIView(generics.GenericAPIView):
     serializer_class = api_serializer.InstructorSummarySerializer
@@ -226,23 +283,22 @@ class StudentCourseCompletedCreateAPIView(generics.CreateAPIView):
             raise PermissionDenied("You are not enrolled in this course")
             
         # Toggle completion
-        completed_lesson, created = CompletedLesson.objects.get_or_create(
+        completed_lesson = CompletedLesson.objects.filter(
             user=request.user,
             course=course,
             variant_item=variant_item
-        )
-        
-        if not created:
-            # If it already implies "completed", hitting it again could mean "unmark" or just ignore.
-            # For this implementation, let's treat it as a toggle or ensure it exists.
-            # If standard behavior is 'mark as done', we just return existing.
-            # If we want a toggle, we delete it.
-            # Let's do nothing if it already exists to be idempotent, or 
-            # we can make a separate 'delete' or 'toggle' endpoint.
-            # Let's assume this endpoint is "Mark as Complete". 
-            pass
-            
-        return Response({'message': 'Lesson marked as completed'}, status=status.HTTP_201_CREATED)
+        ).first()
+
+        if completed_lesson:
+            completed_lesson.delete()
+            return Response({'message': 'Lesson unmarked as completed', 'status': 'unmarked'}, status=status.HTTP_200_OK)
+        else:
+            CompletedLesson.objects.create(
+                user=request.user,
+                course=course,
+                variant_item=variant_item
+            )
+            return Response({'message': 'Lesson marked as completed', 'status': 'marked'}, status=status.HTTP_201_CREATED)
 
 
 class CourseCreateAPIView(generics.CreateAPIView):
@@ -253,11 +309,10 @@ class CourseCreateAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         from api.models import Teacher
         
-        # Ensure user has a Teacher profile
-        teacher, created = Teacher.objects.get_or_create(user=self.request.user)
-        if created:
-            teacher.full_name = self.request.user.full_name or self.request.user.username
-            teacher.save()
+        try:
+            teacher = Teacher.objects.get(user=self.request.user)
+        except Teacher.DoesNotExist:
+            raise PermissionDenied("You must be an instructor to create a course.")
             
         serializer.save(teacher=teacher)
 
@@ -437,3 +492,44 @@ class CourseVariantItemDeleteAPIView(generics.DestroyAPIView):
             raise PermissionDenied("You are not authorized to delete this lesson.")
 
         return variant_item
+
+class AdminUserListAPIView(generics.ListAPIView):
+    # Admin Control: View ALL users
+    serializer_class = api_serializer.UserSerializer
+    permission_classes = [IsAdminUser]
+    queryset = User.objects.all().order_by('-date_joined')
+
+class InstructorStudentListAPIView(generics.ListAPIView):
+    # Teacher Control: View STUDENTS enrolled in their courses
+    serializer_class = api_serializer.UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get courses taught by this teacher
+        teacher_courses = self.request.user.course_set.all()
+        # Find EnrolledCourses linked to these courses
+        # Optimization: distinct() to avoid duplicate students if they are in multiple courses
+        student_ids = EnrolledCourse.objects.filter(course__in=teacher_courses).values_list('user_id', flat=True)
+        return User.objects.filter(id__in=student_ids).distinct().order_by('email')
+
+class StudentWishlistListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = api_serializer.WishlistSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return api_models.Wishlist.objects.filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        course_id = request.data.get('course_id')
+        course = api_models.Course.objects.get(id=course_id)
+        
+        wishlist_item, created = api_models.Wishlist.objects.get_or_create(
+            user=request.user, 
+            course=course
+        )
+
+        if created:
+            return Response({"message": "Course added to wishlist"}, status=status.HTTP_201_CREATED)
+        else:
+            wishlist_item.delete()
+            return Response({"message": "Course removed from wishlist"}, status=status.HTTP_200_OK)

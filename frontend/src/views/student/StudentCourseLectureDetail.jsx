@@ -69,31 +69,41 @@ function StudentCourseLectureDetail() {
 
   const markLessonAsCompleted = async (variantItemId) => {
       try {
-          await axiosInstance.post(API.STUDENT_COURSE_COMPLETED_LESSON, {
+          const res = await axiosInstance.post(API.STUDENT_COURSE_COMPLETED_LESSON, {
               course_id: course.id,
               variant_item_id: variantItemId
           });
           
-          // Update local state
-          if (!completedLessons.includes(variantItemId)) {
-              setCompletedLessons([...completedLessons, variantItemId]);
+          const { status, message } = res.data;
+
+          if (status === 'marked') {
+              setCompletedLessons(prev => [...prev, variantItemId]);
+              Swal.fire({
+                toast: true,
+                icon: 'success',
+                title: 'Lesson Completed!',
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500
+            });
+          } else if (status === 'unmarked') {
+              setCompletedLessons(prev => prev.filter(id => id !== variantItemId));
+              Swal.fire({
+                toast: true,
+                icon: 'info',
+                title: 'Lesson Unmarked',
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500
+            });
           }
-          
-          Swal.fire({
-              toast: true,
-              icon: 'success',
-              title: 'Lesson Completed!',
-              position: 'top-end',
-              showConfirmButton: false,
-              timer: 1500
-          });
 
       } catch (error) {
           console.error("Error marking lesson as completed", error);
           Swal.fire({
               icon: 'error',
               title: 'Error',
-              text: 'Could not mark lesson as completed.'
+              text: 'Could not update lesson status.'
           });
       }
   };

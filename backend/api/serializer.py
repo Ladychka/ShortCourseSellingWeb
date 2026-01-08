@@ -13,6 +13,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['username'] = user.username
         token['email'] = user.email
         token['full_name'] = user.full_name
+        token['is_staff'] = user.is_staff
+        token['is_superuser'] = user.is_superuser
+        token['is_teacher'] = hasattr(user, 'teacher')
 
         return token
     
@@ -165,10 +168,7 @@ class CouponSerializer(serializers.ModelSerializer):
         model = api_models.Coupon
         fields = '__all__'
 
-class WishlistSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = api_models.Wishlist
-        fields = '__all__'
+
 
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
@@ -238,6 +238,12 @@ class CourseSerializer(serializers.ModelSerializer):
 
         else:
             self.Meta.depth = 3
+
+class WishlistSerializer(serializers.ModelSerializer):
+    course = CourseSerializer(read_only=True)
+    class Meta:
+        model = api_models.Wishlist
+        fields = '__all__'
 
 # student
 

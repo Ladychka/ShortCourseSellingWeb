@@ -2,11 +2,13 @@ import React from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import useCartStore from '../../store/cart';
+import { useAuthStore } from '../../store/auth';
 
 function BaseHeader() {
     const navigate = useNavigate();
     const location = useLocation();
     const { cartItems } = useCartStore();
+    const { allUserData: user } = useAuthStore();
     const access = Cookies.get('access_token');
     const [query, setQuery] = React.useState("");
 
@@ -32,19 +34,21 @@ function BaseHeader() {
                         <li className="nav-item">
                             <Link className={`nav-link fw-semibold ${location.pathname.startsWith('/pages/contact-us') ? 'active text-primary' : ''}`} to="/pages/contact-us/">Contact</Link>
                         </li>
-                        <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle fw-semibold" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">Instructor</a>
-                            <ul className="dropdown-menu glass border-0 shadow-lg mt-2">
-                                <li><Link className="dropdown-item py-2" to="/instructor/dashboard/">Dashboard</Link></li>
-                                <li><Link className="dropdown-item py-2" to="/instructor/courses/">My Courses</Link></li>
-                                <li><Link className="dropdown-item py-2" to="/instructor/create-course/">Create Course</Link></li>
-                                <li><Link className="dropdown-item py-2" to="/instructor/reviews/">Reviews</Link></li>
-                                <li><Link className="dropdown-item py-2" to="/instructor/question-answer/">Q/A</Link></li>
-                                <li><Link className="dropdown-item py-2" to="/instructor/students/">Students</Link></li>
-                                <li><Link className="dropdown-item py-2" to="/instructor/earning/">Earning</Link></li>
-                                <li><Link className="dropdown-item py-2" to="/instructor/profile/">Profile</Link></li>
-                            </ul>
-                        </li>
+                        {(user?.is_staff || user?.is_teacher || user?.is_superuser) && (
+                            <li className="nav-item dropdown">
+                                <a className="nav-link dropdown-toggle fw-semibold" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">Instructor</a>
+                                <ul className="dropdown-menu glass border-0 shadow-lg mt-2">
+                                    <li><Link className="dropdown-item py-2" to="/instructor/dashboard/">Dashboard</Link></li>
+                                    <li><Link className="dropdown-item py-2" to="/instructor/courses/">My Courses</Link></li>
+                                    <li><Link className="dropdown-item py-2" to="/instructor/create-course/">Create Course</Link></li>
+                                    <li><Link className="dropdown-item py-2" to="/instructor/reviews/">Reviews</Link></li>
+                                    <li><Link className="dropdown-item py-2" to="/instructor/question-answer/">Q/A</Link></li>
+                                    <li><Link className="dropdown-item py-2" to="/instructor/students/">Students</Link></li>
+                                    <li><Link className="dropdown-item py-2" to="/instructor/earning/">Earning</Link></li>
+                                    <li><Link className="dropdown-item py-2" to="/instructor/profile/">Profile</Link></li>
+                                </ul>
+                            </li>
+                        )}
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle fw-semibold" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">Student</a>
                             <ul className="dropdown-menu glass border-0 shadow-lg mt-2">

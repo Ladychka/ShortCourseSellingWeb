@@ -1,5 +1,7 @@
 export const API = {
   INSTRUCTOR_STATS: '/instructor/dashboard-stats/',
+  ADMIN_STATS: '/admin/dashboard/stats/',
+  ADMIN_COURSES: '/admin/courses/',
   INSTRUCTOR_COURSES_MINI: '/instructor/courses-mini/',
   INSTRUCTOR_REVENUE_TREND: '/instructor/revenue-trend/',
   INSTRUCTOR_COURSE_DETAIL: '/instructor/course-detail/',
@@ -17,4 +19,7 @@ export const API = {
   STUDENT_COURSE_DETAIL: '/student/course-detail/',
   STUDENT_COURSE_COMPLETED_LESSON: '/student/course/completed-lesson/',
   STUDENT_DASHBOARD_STATS: '/student/dashboard-stats/',
+  ADMIN_USERS: '/admin/users/',
+  INSTRUCTOR_STUDENTS: '/instructor/students/',
+  STUDENT_WISHLIST: '/student/wishlist/',
 };
